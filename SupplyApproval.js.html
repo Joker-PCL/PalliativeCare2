@@ -1,0 +1,709 @@
+<script>
+  // Global variables
+  let supplyRequests = [];
+  let currentRequestCode = '';
+  let currentItemIndex = -1;
+  let isSubmitting = false;
+  let currentPage = 1;
+  const itemsPerPage = 10;
+  let filteredRequests = [];
+
+  // Initialize when document is ready
+  $(document).ready(() => {
+    try {
+      loadSupplyRequests();
+      setupEventListeners();
+      setupApprovalEvents();
+    } catch (error) {
+      console.error('Error during initialization:', error);
+      showAlert('error', 'เกิดข้อผิดพลาดในการโหลดระบบ');
+    }
+  });
+
+  // Setup event listeners
+  function setupEventListeners() {
+    $('#searchRequest')
+      .off('input')
+      .on(
+        'input',
+        debounce(() => {
+          filterRequests();
+        }, 300)
+      );
+
+    $('#filterStatus')
+      .off('change')
+      .on('change', () => {
+        filterRequests();
+      });
+
+    $('#filterCurriculum')
+      .off('change')
+      .on('change', () => {
+        filterRequests();
+      });
+
+    $('#sortBy')
+      .off('change')
+      .on('change', () => {
+        sortRequests();
+      });
+
+    // Add Error Handler
+    $(document).ajaxError((event, jqXHR, settings, error) => {
+      console.error('Ajax Error:', error);
+      showAlert('error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+    });
+  }
+
+  // Setup approval events
+  function setupApprovalEvents() {
+    updateApprovalModal();
+
+    // Setup form submission
+    $(document).on('submit', '#approvalForm', function (e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // Setup note validation
+    $(document).on('input', '#approvalNote', function () {
+      $(this).removeClass('is-invalid');
+    });
+  }
+
+  // Load supply requests
+  function loadSupplyRequests() {
+    showLoading('กำลังโหลดข้อมูล...');
+
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (!userSession?.user?.email) {
+      hideLoading();
+      showAlert('error', 'กรุณาเข้าสู่ระบบ');
+      return;
+    }
+
+    google.script.run
+      .withSuccessHandler((result) => {
+        hideLoading();
+        if (result && result.success) {
+          supplyRequests = Array.isArray(result.data) ? result.data : [];
+          filteredRequests = [...supplyRequests];
+          currentPage = 1;
+          updateRequestsTable();
+          updateSummaryCards();
+        } else {
+          showAlert('error', result?.message || 'ไม่สามารถโหลดข้อมูลได้');
+        }
+      })
+      .withFailureHandler((error) => {
+        hideLoading();
+        showAlert('error', 'เกิดข้อผิดพลาด: ' + error?.toString());
+      })
+      .getSupplyRequests();
+  }
+
+  // Filter requests
+  function filterRequests() {
+    try {
+      const searchTerm = $('#searchRequest').val()?.toLowerCase() ?? '';
+      const statusFilter = $('#filterStatus').val() ?? '';
+      const curriculumFilter = $('#filterCurriculum').val() ?? '';
+
+      filteredRequests = supplyRequests.filter((req) => {
+        if (!req) return false;
+
+        const requestCode = (req.requestCode || '').toLowerCase();
+        const requester = (req.requester || '').toLowerCase();
+        const item = (req.item || '').toLowerCase();
+        const email = (req.email || '').toLowerCase();
+        const curriculum = (req.curriculum || '').toUpperCase();
+
+        const matchSearch =
+          !searchTerm ||
+          requestCode.includes(searchTerm) ||
+          requester.includes(searchTerm) ||
+          item.includes(searchTerm) ||
+          email.includes(searchTerm);
+
+        const matchStatus = !statusFilter || req.status === statusFilter;
+        const matchCurriculum = !curriculumFilter || curriculum === curriculumFilter;
+
+        return matchSearch && matchStatus && matchCurriculum;
+      });
+
+      currentPage = 1;
+      updateRequestsTable(filteredRequests);
+    } catch (error) {
+      console.error('Error in filterRequests:', error);
+      showAlert('error', 'เกิดข้อผิดพลาดในการกรองข้อมูล');
+    }
+  }
+
+  // Sort requests
+  function sortRequests() {
+    const sortBy = $('#sortBy').val();
+
+    const sortedRequests = [...filteredRequests].sort((a, b) => {
+      switch (sortBy) {
+        case 'date':
+          return new Date(b.requestDate || 0) - new Date(a.requestDate || 0);
+        case 'status':
+          return (getStatusOrder(a.status) || 999) - (getStatusOrder(b.status) || 999);
+        case 'curriculum':
+          const curriculumOrder = {
+            ECC: 1,
+            GS: 2,
+            IEP: 3,
+          };
+          const currA = (a.curriculum || '').toUpperCase();
+          const currB = (b.curriculum || '').toUpperCase();
+          return (curriculumOrder[currA] || 999) - (curriculumOrder[currB] || 999);
+        default:
+          return 0;
+      }
+    });
+
+    filteredRequests = sortedRequests;
+    currentPage = 1;
+    updateRequestsTable(filteredRequests);
+  }
+
+  // Get status order for sorting
+  function getStatusOrder(status) {
+    const order = {
+      รอดำเนินการ: 1,
+      อนุมัติแล้ว: 2,
+      ปฏิเสธ: 3,
+      เสร็จสิ้น: 4,
+    };
+    return order[status];
+  }
+
+  // Handle approval action
+  function handleApproval(action) {
+    // Prevent default form submission
+    event?.preventDefault();
+
+    // Basic validation
+    if (!currentRequestCode || !action) {
+      showAlert('warning', 'ข้อมูลไม่ครบถ้วน');
+      return false;
+    }
+
+    const note = $('#approvalNote').val()?.trim();
+    if (!note) {
+      $('#approvalNote').addClass('is-invalid');
+      showAlert('warning', 'กรุณาระบุหมายเหตุ');
+      return false;
+    }
+
+    // Get operator info
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const operator = userSession?.user?.email;
+    if (!operator) {
+      showAlert('error', 'กรุณาเข้าสู่ระบบใหม่');
+      return false;
+    }
+
+    // Disable form while processing
+    const $modal = $('#approvalModal');
+    const $form = $modal.find('form');
+    const $submitBtn = $modal.find('button[type="submit"]');
+    const $closeBtn = $modal.find('button[data-bs-dismiss="modal"]');
+
+    $form.find('input, textarea, button').prop('disabled', true);
+    $submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>กำลังดำเนินการ...');
+    $closeBtn.prop('disabled', true);
+
+    // Show loading
+    showLoading('กำลังดำเนินการ...');
+
+    // Call server with timeout
+    const timeoutDuration = 30000; // 30 seconds
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), timeoutDuration);
+    });
+
+    const serverCall = new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)
+        .handleSupplyApproval(currentRequestCode, currentItemIndex, action, note, operator);
+    });
+
+    // Race between timeout and server call
+    Promise.race([serverCall, timeoutPromise])
+      .then((result) => {
+        if (result?.success) {
+          // Success case
+          hideLoading();
+          showAlert('success', result.message || 'ดำเนินการสำเร็จ');
+
+          // Close modal after short delay
+          setTimeout(() => {
+            $modal.modal('hide');
+            // Refresh data after modal is hidden
+            setTimeout(() => loadSupplyRequests(), 500);
+          }, 1000);
+        } else {
+          throw new Error(result?.message || 'ไม่สามารถดำเนินการได้');
+        }
+      })
+      .catch((error) => {
+        console.error('Approval error:', error);
+        hideLoading();
+        showAlert('error', error?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+      })
+      .finally(() => {
+        // Re-enable form
+        $form.find('input, textarea, button').prop('disabled', false);
+        $submitBtn.html('บันทึก');
+        $closeBtn.prop('disabled', false);
+      });
+
+    return false; // Prevent form submission
+  }
+
+  // Show approval modal
+  function showApprovalModal(requestCode, itemIndex) {
+    try {
+      currentRequestCode = requestCode;
+      currentItemIndex = itemIndex;
+
+      const requests = filteredRequests.filter((r) => r.requestCode === requestCode);
+      const request = requests[itemIndex];
+
+      if (!request) {
+        throw new Error('ไม่พบข้อมูลการเบิก');
+      }
+
+      $('#approvalRequestCode').val(requestCode);
+      $('#requestDetails').html(`
+            <div class="card-text">
+                <div class="mb-2">
+                    <strong>รหัสเบิก:</strong> ${escapeHtml(request.requestCode)}
+                </div>
+                <div class="mb-2">
+                    <strong>ผู้เบิก:</strong> ${escapeHtml(request.requester)}<br>
+                    <small class="text-muted">${escapeHtml(request.email)}</small>
+                </div>
+                <div class="mb-2">
+                    <strong>รายการที่ ${itemIndex + 1}:</strong><br>
+                    ${escapeHtml(request.item)} (${request.amount} ${escapeHtml(request.unit)})
+                </div>
+                <div class="mb-2">
+                    <strong>วัตถุประสงค์:</strong> ${escapeHtml(request.purpose)}
+                </div>
+                <div>
+                    <strong>วันที่เบิก:</strong> ${formatDate(request.requestDate)}<br>
+                    <strong>วันที่ต้องการใช้:</strong> ${formatDate(request.useDate)}
+                </div>
+            </div>
+        `);
+
+      // Clear previous note and validation
+      $('#approvalNote').val('').removeClass('is-invalid');
+
+      // Add action buttons based on status
+      const actionButtons = $('#actionButtons');
+      actionButtons.empty();
+
+      if (request.status === 'รอดำเนินการ') {
+        actionButtons.html(`
+                <button type="button" class="btn btn-success w-100 mb-2" onclick="handleApproval('approve')">
+                    <i class="bi bi-check-circle-fill me-2"></i>อนุมัติ
+                </button>
+                <button type="button" class="btn btn-danger w-100" onclick="handleApproval('reject')">
+                    <i class="bi bi-x-circle-fill me-2"></i>ปฏิเสธ
+                </button>
+            `);
+      } else if (request.status === 'อนุมัติแล้ว') {
+        actionButtons.html(`
+                <button type="button" class="btn btn-primary w-100" onclick="handleApproval('complete')">
+                    <i class="bi bi-flag-fill me-2"></i>เสร็จสิ้น
+                </button>
+            `);
+      }
+
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
+      modal.show();
+    } catch (error) {
+      console.error('Error showing approval modal:', error);
+      showAlert('error', error.message || 'เกิดข้อผิดพลาดในการแสดงข้อมูล');
+    }
+  }
+
+  // Update approval modal HTML
+  function updateApprovalModal() {
+    const modalHtml = `
+    <div class="modal fade" id="approvalModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-clipboard-check me-2"></i>
+                        จัดการคำขอเบิกพัสดุ
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="approvalForm" onsubmit="return false;">
+                    <div class="modal-body">
+                        <div class="card bg-light mb-4">
+                            <div class="card-body" id="requestDetails"></div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-gear-fill me-2"></i>
+                                การดำเนินการ
+                            </label>
+                            <div class="d-grid gap-2" id="actionButtons"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-chat-square-text-fill me-2"></i>
+                                หมายเหตุ
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="approvalNote" 
+                                rows="3" 
+                                required
+                                placeholder="กรุณาระบุรายละเอียดเพิ่มเติม..."
+                            ></textarea>
+                            <div class="invalid-feedback">
+                                กรุณาระบุหมายเหตุ
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-2"></i>ยกเลิก
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>บันทึก
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>`;
+
+    // Remove existing modal if any
+    $('#approvalModal').remove();
+    // Add new modal to body
+    $('body').append(modalHtml);
+  }
+
+  // Update table and pagination
+  function updateRequestsTable(items = filteredRequests) {
+    const tbody = $('#requestTableBody');
+    tbody.empty();
+
+    if (!Array.isArray(items) || items.length === 0) {
+      tbody.html(`
+            <tr>
+                <td colspan="6" class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+                        <h5 class="text-muted mb-1">ไม่พบรายการเบิก</h5>
+                        <p class="text-muted small mb-0">ไม่มีรายการเบิกที่ตรงกับเงื่อนไขการค้นหา</p>
+                    </div>
+                </td>
+            </tr>
+        `);
+      updatePagination(0);
+      return;
+    }
+
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedItems = items.slice(startIndex, endIndex);
+
+    // Group requests by request code
+    const groupedRequests = {};
+    paginatedItems.forEach((req) => {
+      if (!req?.requestCode) return;
+
+      if (!groupedRequests[req.requestCode]) {
+        groupedRequests[req.requestCode] = [];
+      }
+      groupedRequests[req.requestCode].push(req);
+    });
+
+    // Render grouped requests
+    Object.entries(groupedRequests).forEach(([requestCode, requests]) => {
+      requests.forEach((req, idx) => {
+        const statusBadge = getStatusBadge(req.status);
+        const row = `
+                <tr>
+                    ${
+                      idx === 0
+                        ? `
+                        <td rowspan="${requests.length}" class="align-middle">
+                            <div class="fw-semibold">${escapeHtml(req.requestCode)}</div>
+                            <small class="text-muted">${formatDate(req.requestDate)}</small>
+                        </td>
+                        <td rowspan="${requests.length}" class="align-middle">
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">${escapeHtml(req.requester)}</div>
+                                <small class="text-muted">${escapeHtml(req.email)}</small>
+                                <div class="mt-2">
+                                    <span class="badge bg-info bg-opacity-10 text-info px-2">
+                                        ${escapeHtml(req.curriculum || '-')}
+                                    </span>
+                                    <small class="text-muted ms-1">
+                                        ${escapeHtml(req.grade || '-')}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                    `
+                        : ''
+                    }
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="fw-medium">${escapeHtml(req.item)}</span>
+                            <small class="text-muted">
+                                จำนวน: ${req.amount} ${escapeHtml(req.unit)}
+                            </small>
+                            ${
+                              req.purpose
+                                ? `
+                                <small class="text-muted mt-1">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    ${escapeHtml(req.purpose)}
+                                </small>
+                            `
+                                : ''
+                            }
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge ${statusBadge} px-3 py-2">
+                            ${escapeHtml(req.status || 'ไม่ระบุ')}
+                        </span>
+                    </td>
+                    <td>
+                        ${escapeHtml(req.note) || '-'}
+                    </td>
+                    <td class="text-center">
+                        ${
+                          req.status === 'รอดำเนินการ' || req.status === 'อนุมัติแล้ว'
+                            ? `
+                            <button class="btn btn-primary btn-sm" 
+                                    onclick="showApprovalModal('${req.requestCode}', ${idx})">
+                                <i class="bi bi-check2-square me-1"></i>
+                                จัดการ
+                            </button>
+                        `
+                            : `
+                            <div class="small text-muted">
+                                <div>${escapeHtml(req.operator || '-')}</div>
+                                <small>${formatDate(req.updatedDate) || '-'}</small>
+                            </div>
+                        `
+                        }
+                    </td>
+                </tr>
+            `;
+        tbody.append(row);
+      });
+    });
+
+    updatePagination(items.length);
+    updateSummaryCards();
+  }
+
+  // Update pagination controls
+  function updatePagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const pagination = $('#pagination');
+    pagination.empty();
+
+    if (totalPages <= 1) {
+      return;
+    }
+
+    let paginationHtml = `
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-end mb-0">
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <button class="page-link" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </li>
+    `;
+
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    if (endPage - startPage < 4) {
+      startPage = Math.max(1, endPage - 4);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      paginationHtml += `
+            <li class="page-item ${currentPage === i ? 'active' : ''}">
+                <button class="page-link" onclick="changePage(${i})">${i}</button>
+            </li>
+        `;
+    }
+
+    paginationHtml += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <button class="page-link" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+    `;
+
+    pagination.html(paginationHtml);
+
+    const startItem = (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+    $('#pageInfo').html(`
+        <div class="text-muted small">
+            แสดง ${startItem}-${endItem} จาก ${totalItems} รายการ
+        </div>
+    `);
+  }
+
+  // Update summary cards
+  function updateSummaryCards() {
+    const summary = {
+      total: filteredRequests.length,
+      pending: filteredRequests.filter((r) => r?.status === 'รอดำเนินการ').length,
+      approved: filteredRequests.filter((r) => r?.status === 'อนุมัติแล้ว').length,
+      rejected: filteredRequests.filter((r) => r?.status === 'ปฏิเสธ').length,
+      completed: filteredRequests.filter((r) => r?.status === 'เสร็จสิ้น').length,
+    };
+
+    Object.entries(summary).forEach(([key, value]) => {
+      $(`#${key}Count`).text(value);
+    });
+  }
+
+  // Get status badge class
+  function getStatusBadge(status) {
+    switch (status) {
+      case 'รอดำเนินการ':
+        return 'bg-warning text-dark';
+      case 'อนุมัติแล้ว':
+        return 'bg-success text-white';
+      case 'ปฏิเสธ':
+        return 'bg-danger text-white';
+      case 'เสร็จสิ้น':
+        return 'bg-info text-white';
+      default:
+        return 'bg-secondary text-white';
+    }
+  }
+
+  // Utility functions
+  function formatDate(dateInput) {
+    try {
+      if (!dateInput) return '-';
+      const date = new Date(dateInput);
+      if (isNaN(date.getTime())) return '-';
+
+      return date.toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '-';
+    }
+  }
+
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return String(unsafe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  function showAlert(icon, title) {
+    Swal.fire({
+      icon,
+      title,
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+  }
+
+  function showLoading(text = 'กำลังดำเนินการ...') {
+    Swal.fire({
+      title: text,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  function hideLoading() {
+    Swal.close();
+  }
+
+  function changePage(newPage) {
+    try {
+      const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+
+      // Validate page number
+      if (newPage < 1 || newPage > totalPages) {
+        return;
+      }
+
+      currentPage = newPage;
+      updateRequestsTable();
+
+      // Scroll to top of table
+      const tableContainer = document.querySelector('.table-container');
+      if (tableContainer) {
+        tableContainer.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      }
+    } catch (error) {
+      console.error('Error in changePage:', error);
+      showAlert('error', 'เกิดข้อผิดพลาดในการเปลี่ยนหน้า');
+    }
+  }
+
+  // Global error handler
+  window.onerror = function (message, source, lineno, colno, error) {
+    console.error('Global error:', { message, source, lineno, colno, error });
+    hideLoading();
+    showAlert('error', 'เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง');
+    return false;
+  };
+
+  // Export functions for global use
+  window.showApprovalModal = showApprovalModal;
+  window.handleApproval = handleApproval;
+  window.changePage = changePage;
+  window.filterRequests = filterRequests;
+  window.sortRequests = sortRequests;
+  window.changePage = changePage;
+</script>

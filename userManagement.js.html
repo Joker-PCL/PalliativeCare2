@@ -1,0 +1,29 @@
+<script>
+  // userManagement.js
+
+  const UserManagement = {
+    addUser: function (userData) {
+      return performAction('addUser', userData);
+    },
+
+    updateUser: function (email, newData) {
+      return performAction('updateUserData', { email, newData });
+    },
+
+    deleteUser: function (email) {
+      return performAction('deleteUser', email);
+    },
+
+    getAllUsers: function () {
+      return performAction('getAllUsers');
+    },
+
+    getUserData: function (email) {
+      return performAction('getUserData', email);
+    },
+
+    resetUserPassword: function (email) {
+      return performAction('resetUserPassword', email);
+    },
+  };
+</script>

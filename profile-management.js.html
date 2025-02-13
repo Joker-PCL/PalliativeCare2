@@ -1,0 +1,939 @@
+<script>
+  // profile-management.js
+
+  $(document).ready(function () {
+    initializeProfile();
+    setupEventListeners();
+  });
+
+  function setupEventListeners() {
+    // Email edit form submission
+    $('#emailEditForm').on('submit', handleEmailUpdate);
+
+    // Real-time email validation
+    $('#newEmail').on('input', function () {
+      validateEmailInput($(this));
+    });
+
+    // Modal events
+    $('#emailEditModal').on('hidden.bs.modal', resetEmailEditForm);
+
+    // Toggle password visibility
+    $('.toggle-password').on('click', function () {
+      const targetId = $(this).data('target');
+      const input = $(`#${targetId}`);
+      const icon = $(this).find('i');
+
+      if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('bi-eye-slash').addClass('bi-eye');
+      } else {
+        input.attr('type', 'password');
+        icon.removeClass('bi-eye').addClass('bi-eye-slash');
+      }
+    });
+  }
+
+  function validateEmailInput(input) {
+    const email = input.val().trim();
+    const isValid = isValidEmail(email);
+
+    input.toggleClass('is-invalid', !isValid);
+
+    const feedback = input.next('.invalid-feedback');
+    if (!isValid) {
+      if (!feedback.length) {
+        input.after('<div class="invalid-feedback">กรุณากรอกอีเมลให้ถูกต้อง</div>');
+      }
+    } else {
+      feedback.remove();
+    }
+
+    return isValid;
+  }
+
+  function checkLocalStorageOnLoad() {
+    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    if (userSession && userSession.user && userSession.user.profileImage) {
+      updateAllProfileImages(userSession.user.profileImage);
+    } else {
+      updateAllProfileImages('https://via.placeholder.com/150');
+    }
+  }
+
+  function loadProfileData() {
+    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    if (userSession && userSession.user && userSession.user.email) {
+      const userEmail = userSession.user.email;
+
+      Swal.fire({
+        title: 'กำลังโหลดข้อมูล...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      google.script.run
+        .withSuccessHandler(function (userData) {
+          Swal.close();
+          if (userData) {
+            displayProfileData(userData);
+          } else {
+            showAlert('ไม่พบข้อมูลผู้ใช้', 'error');
+          }
+        })
+        .withFailureHandler(function (error) {
+          Swal.close();
+          showAlert('เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error, 'error');
+        })
+        .getUserData(userEmail);
+    }
+  }
+
+  // แก้ไขฟังก์ชัน displayProfileData
+  function displayProfileData(userData) {
+    if (userData) {
+      // อัพเดตข้อมูลทั้งหมด
+      $('#profileName').text(userData.name || 'ไม่ระบุ');
+      $('#fullName').val(userData.name || '');
+
+      // อัพเดตอีเมลทุกจุด
+      const email = userData.email || getCurrentEmailFromSession();
+      $('#profileEmail').text(email);
+      $('#currentEmail').text(email);
+      $('#currentEmailDisplay').val(email);
+
+      // อัพเดต role
+      $('#profileRole')
+        .text(userData.role || 'User')
+        .removeClass()
+        .addClass(`badge ${getRoleBadgeClass(userData.role)}`);
+
+      // อัพเดตรูปโปรไฟล์
+      if (userData.profileImage) {
+        updateAllProfileImages(userData.profileImage);
+      }
+
+      // อัพเดต Session
+      updateUserSession(userData);
+    }
+  }
+
+  function updateUserSession(userData) {
+    try {
+      const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+      if (userSession.user) {
+        userSession.user = {
+          ...userSession.user,
+          ...userData,
+        };
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+      }
+    } catch (error) {
+      console.error('Error updating user session:', error);
+    }
+  }
+
+  function setupEventListeners() {
+    // Profile Form Events
+    $('#profileForm').on('submit', handleProfileUpdate);
+    $('#changePasswordForm').on('submit', handlePasswordChange);
+    $('#profileImageUpload').on('change', handleProfileImageUpload);
+
+    // Email Edit Events
+    $('#emailEditForm').on('submit', handleEmailUpdate);
+    $('#newEmail').on('input', validateEmailInput);
+
+    // Password Toggle Events
+    $('.toggle-password').on('click', function () {
+      const targetId = $(this).data('target');
+      const input = $(`#${targetId}`);
+      const icon = $(this).find('i');
+
+      if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('bi-eye-slash').addClass('bi-eye');
+      } else {
+        input.attr('type', 'password');
+        icon.removeClass('bi-eye').addClass('bi-eye-slash');
+      }
+    });
+
+    // Modal Events
+    $('#emailEditModal').on('hidden.bs.modal', function () {
+      resetEmailEditForm();
+    });
+  }
+
+  function handleProfileUpdate(e) {
+    e.preventDefault();
+    const userData = {
+      name: $('#fullName').val().trim(),
+      email: $('#profileEmail').text(),
+    };
+
+    if (!userData.name) {
+      showAlert('กรุณากรอกชื่อ-นามสกุล', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: 'ยืนยันการอัพเดตข้อมูล',
+      text: 'คุณแน่ใจหรือไม่ที่จะอัพเดตข้อมูลส่วนตัว?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return new Promise((resolve) => {
+          google.script.run
+            .withSuccessHandler((result) => resolve(result))
+            .withFailureHandler((error) => {
+              Swal.showValidationMessage(`เกิดข้อผิดพลาด: ${error}`);
+            })
+            .updateUserProfile(userData);
+        });
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (result.value.success) {
+          Swal.fire({
+            title: 'บันทึกสำเร็จ!',
+            html: `
+                        <div class="text-start">
+                            <p><i class="bi bi-check-circle-fill text-success me-2"></i>อัพเดตข้อมูลเรียบร้อยแล้ว</p>
+                            <p class="text-muted small">ข้อมูลที่อัพเดต:</p>
+                            <ul class="list-unstyled ms-3">
+                                <li><small>ชื่อ-นามสกุล: ${userData.name}</small></li>
+                            </ul>
+                        </div>
+                    `,
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+          }).then(() => {
+            // รีโหลดข้อมูลโปรไฟล์
+            loadProfileData();
+          });
+        } else {
+          showAlert(result.value.message || 'ไม่สามารถอัพเดตข้อมูลได้', 'error');
+        }
+      }
+    });
+  }
+
+  function handlePasswordChange(e) {
+    e.preventDefault();
+    const oldPassword = $('#oldPassword').val();
+    const newPassword = $('#newPassword').val();
+    const confirmPassword = $('#confirmPassword').val();
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      showAlert('กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showAlert('รหัสผ่านใหม่ไม่ตรงกัน', 'warning');
+      return;
+    }
+
+    const passwordStrength = checkPasswordStrength(newPassword);
+    if (!passwordStrength.valid) {
+      showAlert(passwordStrength.message, 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: 'ยืนยันการเปลี่ยนรหัสผ่าน',
+      text: 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนรหัสผ่าน?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showLoadingSpinner();
+        google.script.run
+          .withSuccessHandler(onPasswordChangeSuccess)
+          .withFailureHandler(onPasswordChangeError)
+          .changeUserPassword($('#profileEmail').text(), oldPassword, newPassword);
+      }
+    });
+  }
+
+  function handleEmailUpdate(e) {
+    e.preventDefault();
+
+    const formData = {
+      currentEmail: $('#currentEmailDisplay').val().trim(),
+      newEmail: $('#newEmail').val().trim(),
+      password: $('#emailPassword').val(),
+    };
+
+    // ตรวจสอบข้อมูล
+    if (!validateEmailUpdateData(formData)) return;
+
+    // แสดง loading
+    Swal.fire({
+      title: 'กำลังตรวจสอบ',
+      text: 'กรุณารอสักครู่...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // ตรวจสอบรหัสผ่านก่อน
+    google.script.run
+      .withSuccessHandler(function (validationResult) {
+        Swal.close();
+
+        if (validationResult.success) {
+          // ถ้ารหัสผ่านถูกต้อง แสดงการยืนยันการเปลี่ยนอีเมล
+          showEmailChangeConfirmation(formData);
+        } else {
+          // ถ้ารหัสผ่านไม่ถูกต้อง
+          Swal.fire({
+            icon: 'error',
+            title: 'รหัสผ่านไม่ถูกต้อง',
+            text: 'กรุณาตรวจสอบรหัสผ่านของคุณอีกครั้ง',
+            confirmButtonText: 'ตกลง',
+          });
+          // ล้างช่องรหัสผ่าน
+          $('#emailPassword').val('').focus();
+        }
+      })
+      .withFailureHandler(function (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถตรวจสอบรหัสผ่านได้: ' + error,
+          confirmButtonText: 'ตกลง',
+        });
+      })
+      .validatePassword(formData.currentEmail, formData.password);
+  }
+
+  function validateEmailUpdateData(data) {
+    // ตรวจสอบว่ากรอกข้อมูลครบหรือไม่
+    if (!data.newEmail || !data.password) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        text: 'กรุณากรอกอีเมลใหม่และรหัสผ่านของคุณ',
+        confirmButtonText: 'ตกลง',
+      });
+      return false;
+    }
+
+    // ตรวจสอบรูปแบบอีเมลใหม่
+    if (!isValidEmail(data.newEmail)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'รูปแบบอีเมลไม่ถูกต้อง',
+        text: 'กรุณาตรวจสอบรูปแบบอีเมลใหม่ของคุณ',
+        confirmButtonText: 'ตกลง',
+      });
+      return false;
+    }
+
+    // ตรวจสอบว่าอีเมลใหม่ต้องไม่ซ้ำกับอีเมลเดิม
+    if (data.newEmail === data.currentEmail) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'อีเมลซ้ำ',
+        text: 'อีเมลใหม่ต้องไม่ซ้ำกับอีเมลปัจจุบันของคุณ',
+        confirmButtonText: 'ตกลง',
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  function showEmailChangeConfirmation(formData) {
+    // เก็บข้อมูลฟอร์มเดิม
+    const originalFormState = {
+      currentEmail: formData.currentEmail,
+      newEmail: formData.newEmail,
+      password: formData.password,
+    };
+
+    // ปิด modal แก้ไขอีเมล
+    $('#emailEditModal').modal('hide');
+
+    // รอให้ modal เดิมปิดสนิทก่อนแสดง Swal
+    setTimeout(() => {
+      Swal.fire({
+        title: 'ยืนยันการเปลี่ยนอีเมล',
+        html: `
+                <div class="text-start">
+                    <div class="mb-4">
+                        <p class="mb-2">คุณกำลังจะเปลี่ยนอีเมลจาก:</p>
+                        <div class="px-3 py-2 bg-light rounded">
+                            <p class="text-muted mb-0 font-monospace">${formData.currentEmail}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="mb-2">เป็น:</p>
+                        <div class="px-3 py-2 bg-primary bg-opacity-10 rounded">
+                            <p class="text-primary fw-bold mb-0 font-monospace">${formData.newEmail}</p>
+                        </div>
+                    </div>
+
+            `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยันการเปลี่ยนอีเมล',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#dc3545',
+        reverseButtons: true,
+        showLoaderOnConfirm: true,
+        customClass: {
+          popup: 'swal-wide',
+          title: 'text-warning fw-bold',
+          htmlContainer: 'text-start',
+        },
+        preConfirm: () => {
+          return new Promise((resolve) => {
+            google.script.run
+              .withSuccessHandler(resolve)
+              .withFailureHandler((error) => {
+                Swal.showValidationMessage(`เกิดข้อผิดพลาด: ${error}`);
+              })
+              .updateUserEmail(formData);
+          });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then((result) => {
+        if (result.isConfirmed && result.value?.success) {
+          handleEmailUpdateSuccess(result.value);
+        } else {
+          // กรณียกเลิกหรือปิด (ไม่ว่าด้วยวิธีใด)
+          if (
+            result.dismiss === Swal.DismissReason.cancel ||
+            result.dismiss === Swal.DismissReason.backdrop ||
+            result.dismiss === Swal.DismissReason.esc
+          ) {
+            // คืนค่าข้อมูลเดิมและปิด modal
+            $('#emailEditModal').modal('hide');
+            resetEmailEditForm();
+
+            // แสดงข้อความยกเลิก
+            Swal.fire({
+              icon: 'info',
+              title: 'ยกเลิกการเปลี่ยนอีเมล',
+              text: 'คุณได้ยกเลิกการเปลี่ยนอีเมล',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          }
+        }
+      });
+    }, 500);
+  }
+
+  function validateEmailData(data) {
+    if (!data.newEmail || !data.currentPassword) {
+      showAlert('กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+      return false;
+    }
+
+    if (!isValidEmail(data.newEmail)) {
+      showAlert('รูปแบบอีเมลไม่ถูกต้อง', 'warning');
+      return false;
+    }
+
+    if (data.newEmail === data.currentEmail) {
+      showAlert('อีเมลใหม่ต้องไม่ซ้ำกับอีเมลปัจจุบัน', 'warning');
+      return false;
+    }
+
+    return true;
+  }
+
+  function handleProfileImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showAlert('ขนาดไฟล์เกิน 5MB กรุณาเลือกไฟล์ขนาดเล็กลง', 'warning');
+      resetProfileImageInput();
+      return;
+    }
+
+    showLoadingSpinner('กำลังอัพโหลดรูปภาพ...');
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const base64Image = e.target.result;
+      google.script.run
+        .withSuccessHandler(onProfileImageUploadSuccess)
+        .withFailureHandler(onProfileImageUploadError)
+        .uploadProfileImage($('#profileEmail').text(), base64Image, file.name);
+    };
+    reader.onerror = function () {
+      hideLoadingSpinner();
+      showAlert('เกิดข้อผิดพลาดในการอ่านไฟล์', 'error');
+      resetProfileImageInput();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Success Handlers
+  function onProfileUpdateSuccess(result) {
+    if (result.success) {
+      // อัพเดต Session และ UI
+      const userSession = JSON.parse(localStorage.getItem('userSession'));
+      if (userSession && userSession.user) {
+        userSession.user.name = $('#fullName').val().trim();
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+
+        // อัพเดตการแสดงผลชื่อในทุกที่
+        updateUserDisplayName(userSession.user.name);
+      }
+
+      $('#profileForm')
+        .find('button[type="submit"]')
+        .html('<i class="bi bi-check2-circle me-2"></i>บันทึกสำเร็จ')
+        .addClass('btn-success')
+        .prop('disabled', true);
+
+      setTimeout(() => {
+        $('#profileForm').find('button[type="submit"]').html('บันทึกการเปลี่ยนแปลง').removeClass('btn-success').prop('disabled', false);
+      }, 2000);
+    } else {
+      showAlert(result.message || 'ไม่สามารถอัพเดตข้อมูลได้', 'error');
+    }
+  }
+
+  // เพิ่มฟังก์ชันสำหรับอัพเดตการแสดงชื่อผู้ใช้
+  function updateUserDisplayName(name) {
+    $('#userDisplayName').text(name);
+    $('#profileName').text(name);
+    $('.user-name-display').text(name); // สำหรับที่อื่นๆ ที่แสดงชื่อผู้ใช้
+  }
+
+  function onPasswordChangeSuccess(result) {
+    hideLoadingSpinner();
+    if (result.success) {
+      $('#changePasswordForm')[0].reset();
+      showAlert('เปลี่ยนรหัสผ่านสำเร็จ', 'success');
+    } else {
+      showAlert(result.message || 'ไม่สามารถเปลี่ยนรหัสผ่านได้', 'error');
+    }
+  }
+
+  function handleEmailUpdateSuccess(result) {
+    if (!result.success) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ไม่สามารถเปลี่ยนอีเมลได้',
+        text: result.message,
+        confirmButtonText: 'ตกลง',
+      }).then(() => {
+        // เปิด modal แก้ไขอีเมลอีกครั้งเมื่อเกิดข้อผิดพลาด
+        $('#emailEditModal').modal('show');
+      });
+      return;
+    }
+
+    // แสดงการแจ้งเตือนสำเร็จ
+    Swal.fire({
+      icon: 'success',
+      title: 'อัพเดตอีเมลสำเร็จ',
+      html: `
+            <div class="text-start">
+                <p>อีเมลของคุณถูกเปลี่ยนเป็น:</p>
+                <p class="text-primary fw-bold">${result.newEmail}</p>
+                <hr>
+                <p class="text-warning mb-1">กรุณาจดจำอีเมลใหม่ของคุณ</p>
+                <p class="text-muted small">คุณจะต้องใช้อีเมลใหม่นี้ในการเข้าสู่ระบบครั้งถัดไป</p>
+            </div>
+        `,
+      confirmButtonText: 'ตกลง',
+      allowOutsideClick: false,
+    }).then(() => {
+      // แสดงข้อความเตือนการออกจากระบบ
+      Swal.fire({
+        icon: 'info',
+        title: 'กำลังออกจากระบบ',
+        html: `
+                <div class="text-start">
+                    <p class="mb-3">เพื่อความปลอดภัย ระบบจะดำเนินการดังนี้:</p>
+                    <ol class="text-start">
+                        <li class="mb-2">ออกจากระบบอัตโนมัติ</li>
+                        <li>นำคุณไปยังหน้าเข้าสู่ระบบ</li>
+                    </ol>
+                    <p class="text-muted small mt-3 mb-0">กรุณาเข้าสู่ระบบใหม่ด้วยอีเมลใหม่ของคุณ</p>
+                </div>
+            `,
+        confirmButtonText: 'ตกลง',
+        allowOutsideClick: false,
+        timer: 5000,
+        timerProgressBar: true,
+        willClose: () => {
+          // ทำการ logout
+          handleLogout1();
+        },
+      });
+    });
+  }
+
+  // เพิ่ม CSS สำหรับจัดการ z-index
+  const modalStyles = `
+<style>
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+.modal {
+    z-index: 1050 !important;
+}
+.swal2-container {
+    z-index: 2000 !important;
+}
+</style>
+`;
+
+  // เพิ่ม style เมื่อ document ready
+  $(document).ready(function () {
+    $('head').append(modalStyles);
+  });
+
+  // ฟังก์ชันจัดการการออกจากระบบ (แบบไม่ต้องยืนยัน)
+  function handleLogout1() {
+    localStorage.removeItem('userSession');
+    showLoginForm();
+    showAlert('ออกจากระบบสำเร็จ', 'success');
+  }
+
+  function onProfileImageUploadSuccess(result) {
+    hideLoadingSpinner();
+    if (result.success) {
+      updateAllProfileImages(result.imageUrl);
+      showAlert('อัพโหลดรูปโปรไฟล์สำเร็จ', 'success');
+
+      const userSession = JSON.parse(localStorage.getItem('userSession'));
+      if (userSession && userSession.user) {
+        userSession.user.profileImage = result.imageUrl;
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+      }
+    } else {
+      showAlert(result.message || 'ไม่สามารถอัพโหลดรูปโปรไฟล์ได้', 'error');
+    }
+    resetProfileImageInput();
+  }
+
+  // Error Handlers
+  function onProfileUpdateError(error) {
+    hideLoadingSpinner();
+    showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+  }
+
+  function onPasswordChangeError(error) {
+    hideLoadingSpinner();
+    showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+  }
+
+  function handleEmailUpdateError(error) {
+    console.error('Error updating email:', error);
+    showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+  }
+
+  function onProfileImageUploadError(error) {
+    hideLoadingSpinner();
+    showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+    resetProfileImageInput();
+  }
+
+  // Utility Functions
+  function showEmailEditModal() {
+    try {
+      // ดึงอีเมลจากหลายแหล่งตามลำดับความสำคัญ
+      const currentEmail = getCurrentEmail();
+
+      if (!currentEmail) {
+        throw new Error('ไม่พบข้อมูลอีเมลปัจจุบัน กรุณาเข้าสู่ระบบใหม่');
+      }
+
+      // รีเซ็ตฟอร์มและแสดงอีเมลปัจจุบัน
+      resetEmailEditForm();
+      $('#currentEmailDisplay').val(currentEmail);
+
+      // แสดง modal
+      const modal = new bootstrap.Modal(document.getElementById('emailEditModal'));
+      modal.show();
+    } catch (error) {
+      console.error('Error showing email edit modal:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: error.message,
+        confirmButtonText: 'ตกลง',
+      }).then(() => {
+        // ถ้าไม่พบข้อมูลอีเมล ให้ reload หน้า
+        window.location.reload();
+      });
+    }
+  }
+
+  function getCurrentEmail() {
+    // ลำดับการดึงอีเมล
+    return (
+      $('#currentEmail').text() || // จาก current email span
+      $('#profileEmail').text() || // จาก profile email
+      getUserEmailFromSession()
+    ); // จาก session storage
+  }
+
+  function showAlert(message, type = 'info') {
+    Swal.fire({
+      icon: type,
+      title: type === 'success' ? 'สำเร็จ!' : 'แจ้งเตือน',
+      text: message,
+      confirmButtonText: 'ตกลง',
+    });
+  }
+
+  function validateEmailInput() {
+    const email = $(this).val().trim();
+    const isValid = isValidEmail(email);
+
+    $(this).toggleClass('is-invalid', !isValid);
+
+    const feedback = $(this).next('.invalid-feedback');
+    if (!isValid) {
+      if (!feedback.length) {
+        $(this).after('<div class="invalid-feedback">กรุณากรอกอีเมลให้ถูกต้อง</div>');
+      }
+    } else {
+      feedback.remove();
+    }
+  }
+
+  function resetEmailEditForm() {
+    const form = $('#emailEditForm')[0];
+    if (form) {
+      // รีเซ็ตฟอร์ม
+      form.reset();
+
+      // ดึงอีเมลปัจจุบันมาแสดงใหม่
+      const currentEmail = getCurrentEmail();
+      $('#currentEmailDisplay').val(currentEmail);
+      $('.current-email-display').text(currentEmail);
+
+      // ล้าง validation states
+      $('#newEmail, #emailPassword').removeClass('is-invalid');
+      $('.invalid-feedback').remove();
+
+      // รีเซ็ตการแสดงรหัสผ่าน
+      $('#emailPassword').attr('type', 'password');
+      $('.toggle-password i').removeClass('bi-eye').addClass('bi-eye-slash');
+    }
+  }
+
+  function initializeProfile() {
+    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    if (!userSession?.user?.email) {
+      localStorage.removeItem('userSession');
+      showLoginForm();
+      showAlert('กรุณาเข้าสู่ระบบ', 'warning');
+      return;
+    }
+
+    loadProfileData();
+  }
+
+  function resetProfileImageInput() {
+    $('#profileImageUpload').val('');
+  }
+
+  function updateProfileDisplay(userData) {
+    if (userData) {
+      $('#profileName').text(userData.name);
+      $('#fullName').val(userData.name);
+
+      const userSession = JSON.parse(localStorage.getItem('userSession'));
+      if (userSession && userSession.user) {
+        userSession.user.name = userData.name;
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+      }
+    }
+  }
+
+  function updateAllProfileImages(imageUrl) {
+    $('.profile-image').attr('src', imageUrl);
+  }
+
+  function showLoadingSpinner(message = 'กำลังดำเนินการ...') {
+    Swal.fire({
+      title: message,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      allowOutsideClick: false,
+    });
+  }
+
+  function hideLoadingSpinner() {
+    Swal.close();
+  }
+
+  function showAlert(message, type) {
+    Swal.fire({
+      icon: type,
+      title: type === 'success' ? 'สำเร็จ' : 'แจ้งเตือน',
+      text: message,
+      timer: type === 'success' ? 2000 : undefined,
+      timerProgressBar: type === 'success',
+      showConfirmButton: type !== 'success',
+    });
+  }
+
+  function checkPasswordStrength(password) {
+    const criteria = {
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+
+    const strength = Object.values(criteria).filter(Boolean).length;
+
+    if (strength < 3) {
+      return {
+        valid: false,
+        message: 'รหัสผ่านต้องประกอบด้วยตัวอักษรพิมพ์เล็ก พิมพ์ใหญ่ ตัวเลข และอักขระพิเศษ อย่างน้อย 3 ประเภท',
+      };
+    }
+
+    if (!criteria.length) {
+      return {
+        valid: false,
+        message: 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร',
+      };
+    }
+
+    return {
+      valid: true,
+      message: strength >= 4 ? 'รหัสผ่านแข็งแรงมาก' : 'รหัสผ่านแข็งแรงพอใช้',
+    };
+  }
+
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // เพิ่มฟังก์ชันสำหรับจัดการ error ที่อาจเกิดขึ้น
+  function handleError(error, operation) {
+    console.error(`Error during ${operation}:`, error);
+    showAlert(`เกิดข้อผิดพลาดในการ${operation}: ${error}`, 'error');
+  }
+
+  function getRoleBadgeClass(role) {
+    switch (role?.toLowerCase()) {
+      case 'admin':
+        return 'bg-danger';
+      case 'manager':
+        return 'bg-warning';
+      case 'user':
+        return 'bg-primary';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
+  // สำหรับการ format วันที่
+  function formatDate(date) {
+    if (!date) return '-';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return date;
+
+    return d.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  // สำหรับการ escape HTML เพื่อป้องกัน XSS
+  function escapeHtml(unsafe) {
+    return unsafe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  // สำหรับการ validate input ทั่วไป
+  function validateInput(input, rules = {}) {
+    const value = input.value.trim();
+    let isValid = true;
+    let message = '';
+
+    if (rules.required && !value) {
+      isValid = false;
+      message = 'กรุณากรอกข้อมูลในช่องนี้';
+    } else if (rules.minLength && value.length < rules.minLength) {
+      isValid = false;
+      message = `กรุณากรอกข้อมูลอย่างน้อย ${rules.minLength} ตัวอักษร`;
+    } else if (rules.maxLength && value.length > rules.maxLength) {
+      isValid = false;
+      message = `กรุณากรอกข้อมูลไม่เกิน ${rules.maxLength} ตัวอักษร`;
+    }
+
+    const feedback = input.nextElementSibling;
+    if (feedback?.classList.contains('invalid-feedback')) {
+      feedback.remove();
+    }
+
+    if (!isValid) {
+      input.classList.add('is-invalid');
+      const div = document.createElement('div');
+      div.className = 'invalid-feedback';
+      div.textContent = message;
+      input.parentNode.insertBefore(div, input.nextSibling);
+    } else {
+      input.classList.remove('is-invalid');
+    }
+
+    return isValid;
+  }
+
+  // สำหรับการจัดการ session storage
+  const SessionManager = {
+    updateSession: function (key, value) {
+      const session = JSON.parse(localStorage.getItem('userSession') || '{}');
+      session[key] = value;
+      localStorage.setItem('userSession', JSON.stringify(session));
+    },
+
+    getSession: function (key) {
+      const session = JSON.parse(localStorage.getItem('userSession') || '{}');
+      return key ? session[key] : session;
+    },
+
+    clearSession: function () {
+      localStorage.removeItem('userSession');
+    },
+  };
+
+  // เพิ่มฟังก์ชันใหม่
+  function getCurrentEmailFromSession() {
+    try {
+      const userSession = JSON.parse(localStorage.getItem('userSession'));
+      return userSession?.user?.email || null;
+    } catch {
+      return null;
+    }
+  }
+</script>

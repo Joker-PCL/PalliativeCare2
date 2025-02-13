@@ -1,0 +1,287 @@
+<style>
+  .profile-card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 15px;
+  }
+  .profile-image-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+  }
+  .profile-image-container .btn-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .card-title {
+    color: #007bff;
+    font-weight: bold;
+  }
+  .form-control:focus,
+  .btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  .loading-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* สไตล์สำหรับ Email Edit Modal */
+  #emailEditModal .modal-header {
+    border-bottom: 0;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
+
+  #emailEditModal .modal-content {
+    border: 0;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  #emailEditModal .form-control,
+  #emailEditModal .input-group-text,
+  #emailEditModal .btn {
+    border-radius: 0.375rem;
+  }
+
+  #emailEditModal .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  #emailEditModal
+    .input-group
+    > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  #emailEditModal .form-control-plaintext {
+    color: #333;
+    background-color: #f8f9fa;
+  }
+
+  #emailEditModal .alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+    color: #664d03;
+  }
+
+  #emailEditModal .alert-warning ul {
+    padding-left: 1.5rem;
+  }
+
+  #emailEditModal .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  #emailEditModal .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+  }
+
+  #emailEditModal .btn-outline-secondary:hover {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+
+  #emailEditModal .toggle-password:focus {
+    box-shadow: none;
+  }
+
+  #emailEditModal .form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+  }
+  #currentEmailDisplay {
+    font-weight: 500;
+    color: #333;
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+  }
+
+  #currentEmailDisplay:disabled,
+  #currentEmailDisplay[readonly] {
+    opacity: 1;
+  }
+
+  .input-group-text.bg-light {
+    border-right: 0;
+  }
+
+  .input-group .form-control.bg-light {
+    border-left: 0;
+  }
+
+  #emailEditModal .input-group:has(input[readonly]) {
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+  }
+  /* Modal Styling */
+  .modal-content {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  /* Form Styling */
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #0d6efd;
+  }
+
+  .input-group-text {
+    border: none;
+  }
+
+  .toggle-password:focus {
+    box-shadow: none;
+  }
+
+  /* Animation for validation feedback */
+  .is-invalid {
+    animation: shake 0.5s;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  /* Current Email Input Styling */
+  #currentEmailDisplay {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+  }
+
+  /* Button hover effects */
+  .btn {
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Notice Section Styling */
+  .bg-warning.bg-opacity-10 {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .bg-warning.bg-opacity-10 ol {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .bg-warning.bg-opacity-10 li {
+    line-height: 1.4;
+  }
+
+  /* Modal Header Enhancement */
+  .modal-header .btn-close {
+    padding: 1rem;
+    margin: -1rem -1rem -1rem auto;
+  }
+
+  /* Custom styles for user management */
+  .user-avatar {
+    transition: all 0.2s ease;
+  }
+
+  .table > :not(caption) > * > * {
+    padding: 1rem 0.75rem;
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+  }
+
+  .bg-purple {
+    background-color: #ff0033;
+  }
+
+  .bg-blue-100 {
+    background-color: #e3f2fd;
+  }
+
+  .text-blue-800 {
+    color: #1565c0;
+  }
+
+  /* Hover effects */
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .btn-light:hover {
+    background-color: #e9ecef;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .bulk-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+    }
+
+    .user-avatar {
+      width: 32px !important;
+      height: 32px !important;
+    }
+  }
+</style>

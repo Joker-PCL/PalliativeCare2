@@ -1,0 +1,351 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-color: #f3f4f6;
+    --text-color: #1f2937;
+    --muted-color: #6b7280;
+    --light-color: #f9fafb;
+  }
+
+  body {
+    font-family: 'Prompt', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  #loginContainer .card {
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  #loginContainer .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  #loginContainer .card-header {
+    background-color: transparent;
+  }
+
+  #loginContainer .text-primary {
+    color: var(--primary-color) !important;
+  }
+
+  #loginContainer .form-label {
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  #loginContainer .form-control,
+  #loginContainer .input-group-text,
+  #loginContainer .btn-light {
+    background-color: var(--light-color);
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  #loginContainer .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+  }
+
+  #loginContainer .input-group-text {
+    color: var(--primary-color);
+  }
+
+  #loginContainer .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  #loginContainer .btn-primary:hover,
+  #loginContainer .btn-primary:focus {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  #loginContainer .toggle-password:hover {
+    color: var(--primary-color);
+  }
+
+  #loginContainer .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  #loginContainer .text-muted {
+    color: var(--muted-color) !important;
+  }
+
+  @media (max-width: 576px) {
+    #loginContainer .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  /* Registration Form Styles */
+  .registration-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-floating {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .form-floating input {
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
+  }
+
+  .form-floating label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 1rem 0.75rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+  }
+
+  .password-toggle:hover {
+    color: #0d6efd;
+  }
+
+  .btn-register {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-register:hover {
+    background: linear-gradient(45deg, #0a58ca, #084298);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(10, 88, 202, 0.4);
+  }
+
+  .back-to-login {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  .back-to-login:hover {
+    color: #0d6efd;
+    text-decoration: underline;
+  }
+
+  .password-requirements {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+  }
+
+  .alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    min-width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* เพิ่มใน csslogin.css */
+  #registrationContainer .card {
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  #registrationContainer .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  #registrationContainer .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  #registrationContainer .btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  #registrationContainer .btn-light:hover {
+    background-color: #f3f4f6;
+    transform: translateY(-2px);
+  }
+
+  #registrationContainer .toggle-password:hover {
+    color: var(--primary-color);
+  }
+
+  .password-requirements {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    margin-top: 0.25rem;
+  }
+
+  /* Custom Modal Styles */
+  .modal-content {
+    border: none;
+    border-radius: 15px;
+  }
+
+  .modal-header {
+    border-bottom: none;
+    background: linear-gradient(45deg, #4f46e5, #4338ca);
+    color: white;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .modal-footer {
+    border-top: none;
+  }
+
+  /* Password Toggle Button */
+  .toggle-password {
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    color: #6b7280;
+    transition: color 0.2s ease;
+  }
+
+  .toggle-password:hover {
+    color: #4f46e5;
+  }
+
+  /* Form Validation Styles */
+  .form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: none;
+  }
+
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Alert Styles */
+  .alert {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .alert-success {
+    background-color: #34d399;
+    color: white;
+  }
+
+  .alert-danger {
+    background-color: #f87171;
+    color: white;
+  }
+
+  .alert-warning {
+    background-color: #fbbf24;
+    color: white;
+  }
+
+  /* Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .card {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 576px) {
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .input-group-lg > .form-control {
+      font-size: 0.95rem;
+    }
+  }
+  /* เพิ่ม CSS ไว้ในส่วน <style> ที่มีอยู่แล้ว */
+  .badge {
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .table > :not(caption) > * > * {
+    padding: 0.75rem 1rem;
+  }
+
+  .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    color: #343a40;
+  }
+
+  #emptyCartMessage i {
+    color: #dee2e6;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+</style>

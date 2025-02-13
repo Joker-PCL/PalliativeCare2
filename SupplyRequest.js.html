@@ -1,0 +1,673 @@
+<script>
+  // Global state management
+  let supplyItems = [];
+  let cart = [];
+  let isSubmitting = false;
+  let lastSubmitTime = 0;
+  const SUBMIT_COOLDOWN = 2000; // 2 seconds cooldown between submissions
+
+  // Initialize when document is ready
+  $(document).ready(() => {
+    try {
+      loadSupplyItems();
+      setupEventListeners();
+      initializeForm();
+    } catch (error) {
+      console.error('Error during initialization:', error);
+      showAlert('error', 'เกิดข้อผิดพลาดในการโหลดระบบ');
+    }
+  });
+
+  // Initialize form with default values
+  function initializeForm() {
+    const today = new Date().toISOString().split('T')[0];
+    $('#requestDate').val(today);
+
+    // Pre-fill user info if available
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (userSession.user) {
+      $('#requesterName').val(userSession.user.name || '');
+    }
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    // Search and filter events
+    $('#searchSupply').on('input', debounce(filterSupplyItems, 300));
+    $('#filterUnit').on('change', filterSupplyItems);
+    $('#sortBy').on('change', sortSupplyItems);
+
+    // Form submission
+    $('#requestForm').on('submit', function (e) {
+      e.preventDefault();
+      handleSubmitRequest();
+    });
+
+    // Validate inputs on change
+    $('.form-control').on('input', function () {
+      $(this).removeClass('is-invalid');
+    });
+
+    // Cart button events
+    $('.btn-cart').on('click', function () {
+      updateCartCount();
+    });
+
+    // Purpose radio buttons
+    $('input[name="purpose"]').on('change', function () {
+      $('.purpose-feedback').hide();
+    });
+
+    // Form fields listeners
+    $('#supplyStock, #supplyPrice').on('input', calculateItemTotal);
+
+    // Window beforeunload handler
+    window.addEventListener('beforeunload', (e) => {
+      if (isSubmitting) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+  }
+
+  // Load supply items from server
+  function loadSupplyItems() {
+    showLoading('กำลังโหลดข้อมูล...');
+    google.script.run
+      .withSuccessHandler((items) => {
+        // แปลงรหัสสินค้าให้เป็น string ทุกรายการ
+        supplyItems = items.map((item) => ({
+          ...item,
+          code: String(item.code),
+        }));
+        updateSupplyTable();
+        hideLoading();
+      })
+      .withFailureHandler((error) => {
+        hideLoading();
+        showAlert('error', 'ไม่สามารถโหลดข้อมูล: ' + error);
+      })
+      .getSupplyItems();
+  }
+
+  // Filter supply items
+  function filterSupplyItems() {
+    const searchTerm = $('#searchSupply').val().toLowerCase();
+    const unitFilter = $('#filterUnit').val();
+
+    const filteredItems = supplyItems.filter((item) => {
+      const matchSearch =
+        String(item.code || '')
+          .toLowerCase()
+          .includes(searchTerm) ||
+        String(item.name || '')
+          .toLowerCase()
+          .includes(searchTerm);
+
+      const matchUnit = !unitFilter || item.unit === unitFilter;
+      return matchSearch && matchUnit;
+    });
+
+    updateSupplyTable(filteredItems);
+  }
+
+  // Sort supply items
+  function sortSupplyItems() {
+    const sortBy = $('#sortBy').val();
+
+    const sortedItems = [...supplyItems].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'stock':
+          return b.stock - a.stock;
+        default:
+          return 0;
+      }
+    });
+
+    updateSupplyTable(sortedItems);
+  }
+
+  // Update supply items table
+  function updateSupplyTable(items = supplyItems) {
+    const tbody = $('#supplyTableBody');
+    tbody.empty();
+
+    if (!items.length) {
+      tbody.html(`
+      <tr>
+        <td colspan="6" class="text-center py-5">
+          <div class="d-flex flex-column align-items-center">
+            <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted mb-1">ไม่พบรายการพัสดุ</h5>
+            <p class="text-muted mb-0">กรุณาเพิ่มรายการใหม่</p>
+          </div>
+        </td>
+      </tr>
+    `);
+      return;
+    }
+
+    items.forEach((item, index) => {
+      const stockStatus = getStockStatusClass(item.stock);
+      const row = `
+      <tr>
+        <td class="text-center">${index + 1}</td>
+        <td>${escapeHtml(item.code)}</td>
+        <td>${escapeHtml(item.name)}</td>
+        <td class="text-center">${escapeHtml(item.unit)}</td>
+        <td class="text-end">
+          <span class="badge ${stockStatus.class}">
+            ${item.stock.toLocaleString()} ${stockStatus.icon}
+          </span>
+        </td>
+        <td class="text-center">
+          <div class="input-group input-group-sm">
+            <input type="number" 
+                   class="form-control request-amount" 
+                   min="1" 
+                   max="${item.stock}"
+                   data-code="${String(item.code)}"
+                   ${item.stock <= 0 ? 'disabled' : ''}>
+            <button type="button" 
+                    class="btn btn-primary add-to-cart"
+                    onclick="addToCart('${String(item.code)}')"
+                    ${item.stock <= 0 ? 'disabled' : ''}>
+              <i class="bi bi-cart-plus"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+      tbody.append(row);
+    });
+  }
+  // Handle form submission
+  // Function to handle form submission
+  function handleSubmitRequest() {
+    // Check if already submitting
+    if (isSubmitting) {
+      showAlert('warning', 'กำลังดำเนินการ กรุณารอสักครู่');
+      return;
+    }
+
+    // Check submission cooldown
+    const now = Date.now();
+    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+      showAlert('warning', 'กรุณารอสักครู่ก่อนส่งคำขอใหม่');
+      return;
+    }
+
+    if (!validateForm()) return;
+
+    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    if (!userSession?.user?.email) {
+      showAlert('error', 'กรุณาเข้าสู่ระบบใหม่');
+      return;
+    }
+
+    // Get selected purpose
+    const purposeRadio = $('input[name="purpose"]:checked');
+    if (!purposeRadio.length) {
+      showAlert('warning', 'กรุณาเลือกวัตถุประสงค์การเบิก');
+      return;
+    }
+
+    // Check cart items
+    if (!cart.length) {
+      showAlert('warning', 'กรุณาเลือกรายการที่ต้องการเบิก');
+      return;
+    }
+
+    // Validate all items in cart
+    const invalidItems = cart.filter((item) => {
+      const supplyItem = supplyItems.find((supply) => String(supply.code) === String(item.code));
+      return !supplyItem || item.amount > supplyItem.stock;
+    });
+
+    if (invalidItems.length > 0) {
+      showAlert('error', 'พบรายการที่ไม่ถูกต้องในตะกร้า กรุณาตรวจสอบอีกครั้ง');
+      console.error('Invalid items:', invalidItems);
+      return;
+    }
+
+    // Update submission state
+    isSubmitting = true;
+    lastSubmitTime = now;
+    $('#submitRequest').prop('disabled', true);
+
+    // Prepare request data
+    const requestData = {
+      requestDate: $('#requestDate').val(),
+      requesterName: $('#requesterName').val(),
+      email: userSession.user.email,
+      useDate: $('#useDate').val(),
+      grade: $('#grade').val(),
+      curriculum: $('#curriculum').val(),
+      purpose: purposeRadio.val(),
+      note: $('#requestNote').val(),
+      items: cart.map((item) => ({
+        ...item,
+        code: String(item.code), // แปลงรหัสสินค้าเป็น string ก่อนส่ง
+      })),
+    };
+
+    showLoading('กำลังบันทึกการเบิก...');
+
+    // Add timeout to automatically reset submission state
+    setTimeout(() => {
+      if (isSubmitting) {
+        isSubmitting = false;
+        $('#submitRequest').prop('disabled', false);
+        hideLoading();
+        showAlert('error', 'การบันทึกใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง');
+      }
+    }, 30000); // 30 second timeout
+
+    google.script.run
+      .withSuccessHandler((result) => {
+        hideLoading();
+        $('#submitRequest').prop('disabled', false);
+        isSubmitting = false;
+
+        if (result.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'บันทึกการเบิกสำเร็จ',
+            text: `หมายเลขการเบิก: ${result.requestCode}`,
+            confirmButtonText: 'ตกลง',
+          }).then(() => {
+            resetForm();
+            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('cartOffcanvas'));
+            if (offcanvas) {
+              offcanvas.hide();
+            }
+          });
+        } else {
+          showAlert('error', result.message || 'ไม่สามารถบันทึกการเบิกได้');
+        }
+      })
+      .withFailureHandler((error) => {
+        hideLoading();
+        $('#submitRequest').prop('disabled', false);
+        isSubmitting = false;
+        showAlert('error', 'เกิดข้อผิดพลาด: ' + error);
+      })
+      .saveSupplyRequest(requestData);
+  }
+
+  // Add item to cart
+  function addToCart(itemCode) {
+    try {
+      if (!itemCode) {
+        showAlert('error', 'ไม่พบรหัสสินค้า');
+        return;
+      }
+
+      // Convert to string for comparison
+      const searchCode = String(itemCode);
+
+      // หารายการสินค้า
+      const item = supplyItems.find((item) => String(item.code) === searchCode);
+
+      if (!item) {
+        console.log(
+          'Available items:',
+          supplyItems.map((i) => String(i.code))
+        ); // Debug log
+        console.log('Searching for:', searchCode); // Debug log
+        showAlert('error', `ไม่พบสินค้ารหัส ${searchCode}`);
+        return;
+      }
+
+      const amountInput = $(`.request-amount[data-code="${searchCode}"]`);
+      const amount = parseInt(amountInput.val());
+
+      if (!amount || amount < 1) {
+        showAlert('warning', 'กรุณาระบุจำนวนที่ต้องการเบิก');
+        amountInput.focus();
+        return;
+      }
+
+      if (amount > item.stock) {
+        showAlert('warning', `จำนวนที่เบิกเกินจำนวนในสต็อก (คงเหลือ ${item.stock} ${item.unit})`);
+        amountInput.focus();
+        return;
+      }
+
+      // ตรวจสอบในตะกร้า
+      const cartIndex = cart.findIndex((cartItem) => String(cartItem.code) === searchCode);
+
+      if (cartIndex >= 0) {
+        Swal.fire({
+          title: 'อัพเดตจำนวน?',
+          text: 'รายการนี้มีในตะกร้าแล้ว ต้องการอัพเดตจำนวนหรือไม่?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'อัพเดต',
+          cancelButtonText: 'ยกเลิก',
+          reverseButtons: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            cart[cartIndex].amount = amount;
+            updateCartTable();
+            updateCartCount();
+            amountInput.val('');
+            showToast('success', 'อัพเดตจำนวนในตะกร้าแล้ว');
+          }
+        });
+      } else {
+        cart.push({
+          code: searchCode,
+          name: item.name,
+          unit: item.unit,
+          amount: amount,
+        });
+        updateCartTable();
+        updateCartCount();
+        amountInput.val('');
+        showToast('success', 'เพิ่มรายการในตะกร้าแล้ว');
+      }
+    } catch (error) {
+      console.error('Error in addToCart:', error);
+      showAlert('error', 'เกิดข้อผิดพลาดในการเพิ่มรายการ');
+    }
+  }
+
+  // Remove item from cart
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartTable();
+    updateCartCount();
+    showToast('info', 'ลบรายการออกจากตะกร้าแล้ว');
+  }
+
+  // Update cart count badge
+  function updateCartCount() {
+    const cartCount = cart.length;
+    $('#cartCount').text(cartCount);
+    $('#cartCount').toggle(cartCount > 0);
+  }
+
+  // Update cart table
+  function updateCartTable() {
+    const tbody = $('#cartTableBody');
+    const emptyMessage = $('#emptyCartMessage');
+    tbody.empty();
+
+    // Update cart counters
+    $('#modalCartCount').text(cart.length);
+    $('#totalCartItems').text(cart.length + ' รายการ');
+
+    if (cart.length === 0) {
+      emptyMessage.removeClass('d-none');
+      return;
+    }
+
+    emptyMessage.addClass('d-none');
+    cart.forEach((item, index) => {
+      const supplyItem = supplyItems.find((s) => s.code === item.code);
+      const remaining = supplyItem ? supplyItem.stock - item.amount : 0;
+      const remainingClass = remaining <= (supplyItem?.minStock || 0) ? 'text-warning' : 'text-muted';
+
+      const row = `
+        <tr>
+            <td class="text-center">${index + 1}</td>
+            <td>
+                <div class="d-flex flex-column">
+                    <span class="fw-medium">${escapeHtml(item.name)}</span>
+                    <small class="text-muted">รหัส: ${escapeHtml(item.code)}</small>
+                </div>
+            </td>
+            <td class="text-center">
+                <div class="input-group input-group-sm" style="width: 150px;">
+                    <button class="btn btn-outline-secondary" type="button" 
+                            onclick="updateCartItemAmount(${index}, -1)">
+                        <i class="bi bi-dash"></i>
+                    </button>
+                    <input type="number" class="form-control text-center" 
+                           value="${item.amount}" 
+                           onchange="updateCartItemAmount(${index}, null, this.value)"
+                           min="1">
+                    <button class="btn btn-outline-secondary" type="button" 
+                            onclick="updateCartItemAmount(${index}, 1)">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                <div class="mt-1">
+                    <span class="${remainingClass} small">
+                        <i class="bi bi-box-seam me-1"></i>
+                        คงเหลือ: ${remaining} ${item.unit}
+                    </span>
+                </div>
+            </td>
+            <td class="text-center">
+                <button type="button" 
+                        class="btn btn-outline-danger btn-sm" 
+                        onclick="removeFromCart(${index})" 
+                        title="ลบ">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+      tbody.append(row);
+    });
+
+    updateCartCount();
+  }
+
+  // เพิ่มฟังก์ชันสำหรับอัพเดตจำนวนพัสดุ
+  function updateCartItemAmount(index, change, newValue) {
+    const item = cart[index];
+    if (!item) return;
+
+    let amount;
+    if (newValue !== undefined && newValue !== null) {
+      // ถ้ามีการป้อนค่าโดยตรง
+      amount = parseInt(newValue);
+    } else {
+      // ถ้ากดปุ่ม + หรือ -
+      amount = item.amount + (change || 0);
+    }
+
+    // ตรวจสอบว่าจำนวนต้องมากกว่า 0
+    if (amount < 1) {
+      amount = 1;
+      showAlert('warning', 'จำนวนต้องไม่น้อยกว่า 1');
+      return;
+    }
+
+    // เช็คว่าจำนวนที่ต้องการไม่เกินจำนวนในสต็อก
+    const supplyItem = supplyItems.find((s) => s.code === item.code);
+    if (supplyItem) {
+      const remaining = supplyItem.stock - amount;
+
+      if (amount > supplyItem.stock) {
+        showAlert(
+          'warning',
+          `
+                <div>ไม่สามารถเพิ่มได้มากกว่าจำนวนในสต็อก</div>
+                <small class="text-muted">
+                    คงเหลือ: ${supplyItem.stock} ${item.unit}
+                </small>
+            `
+        );
+        amount = supplyItem.stock;
+      } else {
+        // แสดงจำนวนคงเหลือหลังปรับ
+        const statusClass = remaining <= supplyItem.minStock ? 'text-warning' : 'text-success';
+        showToast(
+          'info',
+          `
+                <div>อัพเดตจำนวนเรียบร้อย</div>
+                <div class="${statusClass}">
+                    <i class="bi bi-box-seam me-1"></i>
+                    คงเหลือ: ${remaining} ${item.unit}
+                </div>
+            `
+        );
+      }
+    }
+
+    // อัพเดตจำนวนในตะกร้า
+    item.amount = amount;
+    updateCartTable();
+  }
+
+  // Validate form
+  function validateForm() {
+    if (cart.length === 0) {
+      showAlert('warning', 'กรุณาเลือกรายการที่ต้องการเบิก');
+      return false;
+    }
+
+    const requiredFields = {
+      requestDate: 'วันที่เขียนเบิก',
+      requesterName: 'ชื่อผู้เบิก',
+      useDate: 'วันที่ต้องการใช้',
+      grade: 'ระดับชั้น',
+      curriculum: 'หลักสูตร',
+    };
+
+    let isValid = true;
+    let missingFields = [];
+
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!$(`#${field}`).val()) {
+        isValid = false;
+        missingFields.push(label);
+        $(`#${field}`).addClass('is-invalid');
+      }
+    });
+
+    if (!$('input[name="purpose"]:checked').val()) {
+      isValid = false;
+      missingFields.push('วัตถุประสงค์การเบิก');
+    }
+
+    if (!isValid) {
+      showAlert('warning', 'กรุณากรอกข้อมูลให้ครบถ้วน:\n' + missingFields.join(', '));
+    }
+
+    return isValid;
+  }
+
+  // Reset form
+  function resetForm() {
+    isSubmitting = false;
+    $('#submitRequest').prop('disabled', false);
+    cart = [];
+    updateCartTable();
+    updateCartCount();
+    $('#requestForm')[0].reset();
+    const today = new Date().toISOString().split('T')[0];
+    $('#requestDate').val(today);
+    loadSupplyItems();
+    $('.is-invalid').removeClass('is-invalid');
+  }
+
+  // Get stock status styling
+  function getStockStatusClass(stock) {
+    if (stock <= 0) {
+      return {
+        class: 'bg-danger text-white',
+        icon: '<i class="bi bi-x-circle ms-1"></i>',
+      };
+    } else if (stock <= 10) {
+      return {
+        class: 'bg-warning text-dark',
+        icon: '<i class="bi bi-exclamation-circle ms-1"></i>',
+      };
+    }
+    return {
+      class: 'bg-success text-white',
+      icon: '<i class="bi bi-check-circle ms-1"></i>',
+    };
+  }
+
+  // Calculate item total
+  function calculateItemTotal() {
+    const stock = Number($('#supplyStock').val() || 0);
+    const price = Number($('#supplyPrice').val() || 0);
+    const total = stock * price;
+    $('#previewTotal').text(
+      '฿' +
+        total.toLocaleString('th-TH', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+    );
+  }
+
+  // Utility Functions
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  function showToast(icon, title) {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+    Toast.fire({ icon, title });
+  }
+
+  function showAlert(icon, title) {
+    Swal.fire({
+      icon,
+      title,
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+  }
+
+  function showLoading(text = 'กำลังดำเนินการ...') {
+    Swal.fire({
+      title: text,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  function hideLoading() {
+    Swal.close();
+  }
+
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return String(unsafe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  // Error Handling
+  window.onerror = function (message, source, lineno, colno, error) {
+    console.error('Global error:', { message, source, lineno, colno, error });
+    hideLoading();
+    showAlert('error', 'เกิดข้อผิดพลาดในการทำงาน กรุณาลองใหม่อีกครั้ง');
+    return false;
+  };
+
+  // Export functions for global use
+  window.addToCart = addToCart;
+  window.removeFromCart = removeFromCart;
+  window.filterSupplyItems = filterSupplyItems;
+  window.sortSupplyItems = sortSupplyItems;
+  window.handleSubmitRequest = handleSubmitRequest;
+  window.resetForm = resetForm;
+  window.updateCartItemAmount = updateCartItemAmount;
+</script>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบ Dashboard 2024</title>
+    
+    <!-- CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+       <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?!= include('css') ?>
+    <?!= include('csslogin') ?>
+    <base target="_top">
+</head>
+
+<body>
+  <!-- Alert Container -->
+<div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+
+<!-- Login Modal -->
+<div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+<div id="loginContainer" class="container-fluid vh-100" style="display: none;">
+  <div class="row h-100 align-items-center justify-content-center">
+    <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
+      <div class="card border-0 rounded-4 shadow-lg">
+        <div class="card-header text-center border-0 pt-4 pb-0 position-relative">
+          <div class="logo-container mb-3">
+            <img src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png" alt="Logo" class="img-fluid rounded-circle shadow" style="width: 100px; height: 100px; object-fit: cover;">
+          </div>
+          <h2 class="fw-bold text-primary mb-0">เข้าสู่ระบบ</h2>
+          <p class="text-muted mt-2">ยินดีต้อนรับสู่ระบบเบิกพัสดุ</p>
+        </div>
+        <div class="card-body p-4 p-md-5">
+          <form id="loginForm">
+            <div class="mb-4">
+              <label for="loginEmail" class="form-label">อีเมล</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-primary border-0"><i class="ri-mail-line"></i></span>
+                <input type="email" class="form-control bg-light border-0" id="loginEmail" placeholder="your.email@example.com" required>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="loginPassword" class="form-label">รหัสผ่าน</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
+                <input type="password" class="form-control bg-light border-0" id="loginPassword" placeholder="••••••••" required>
+                <button class="btn btn-light border-0 toggle-password" type="button" data-target="loginPassword">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="text-end mb-3">
+              <a href="#" class="text-muted text-decoration-none small" onclick="return showForgotPasswordModal()">
+                <i class="ri-question-line"></i> ลืมรหัสผ่าน?
+              </a>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">เข้าสู่ระบบ</button>
+            </div>
+            <div class="text-center mt-3">
+              <p class="mb-0">ยังไม่มีบัญชี? <a href="#" class="text-primary fw-bold text-decoration-none" onclick="return showRegistrationForm()">สมัครสมาชิก</a></p>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer bg-white text-center py-3 border-0">
+          <div class="text-muted">&copy; 2024 ระบบบันทึกข้อมูลครู. สงวนลิขสิทธิ์.<br>จัดทำโดย นายไนยชน ผลทอง ผู้พัฒนาระบบ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Registration Container -->
+<div id="registrationContainer" class="container-fluid vh-100" style="display: none;">
+  <div class="row h-100 align-items-center justify-content-center">
+    <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
+      <div class="card border-0 rounded-4 shadow-lg">
+        <div class="card-header text-center border-0 pt-4 pb-0 position-relative">
+          <div class="logo-container mb-3">
+            <img src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png" alt="Logo" class="img-fluid rounded-circle shadow" style="width: 100px; height: 100px; object-fit: cover;">
+          </div>
+          <h2 class="fw-bold text-primary mb-0">สมัครสมาชิก</h2>
+          <p class="text-muted mt-2">กรอกข้อมูลเพื่อสมัครเข้าใช้งานระบบ</p>
+        </div>
+        <div class="card-body p-4 p-md-5">
+          <form id="registrationForm">
+            <div class="mb-4">
+              <label for="registerEmail" class="form-label">อีเมล</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-primary border-0"><i class="ri-mail-line"></i></span>
+                <input type="email" class="form-control bg-light border-0" id="registerEmail" placeholder="your.email@example.com" required>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="registerName" class="form-label">ชื่อ-นามสกุล</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-primary border-0"><i class="ri-user-line"></i></span>
+                <input type="text" class="form-control bg-light border-0" id="registerName" placeholder="ชื่อ นามสกุล" required>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="registerPassword" class="form-label">รหัสผ่าน</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
+                <input type="password" class="form-control bg-light border-0" id="registerPassword" placeholder="••••••••" required>
+                <button class="btn btn-light border-0 toggle-password" type="button" data-target="registerPassword">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+              <div class="password-requirements text-muted small mt-1">
+                <i class="ri-information-line"></i> รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร ประกอบด้วยตัวอักษรตัวเล็ก ตัวใหญ่ ตัวเลข และอักขระพิเศษ
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="registerConfirmPassword" class="form-label">ยืนยันรหัสผ่าน</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
+                <input type="password" class="form-control bg-light border-0" id="registerConfirmPassword" placeholder="••••••••" required>
+                <button class="btn btn-light border-0 toggle-password" type="button" data-target="registerConfirmPassword">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">สมัครสมาชิก</button>
+              <button type="button" class="btn btn-light btn-lg" onclick="return showLoginForm()">กลับไปหน้าเข้าสู่ระบบ</button>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer bg-white text-center py-3 border-0">
+          <div class="text-muted">&copy; 2024 ระบบบันทึกข้อมูลครู. สงวนลิขสิทธิ์.<br>จัดทำโดย นายไนยชน ผลทอง ผู้พัฒนาระบบ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ลืมรหัสผ่าน</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="forgotPasswordForm" onsubmit="return handleForgotPassword(event)">
+          <div class="mb-3">
+            <label for="forgotPasswordEmail" class="form-label">กรุณากรอกอีเมลที่ใช้ลงทะเบียน</label>
+            <input type="email" class="form-control" id="forgotPasswordEmail" required>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">ส่งรหัสผ่านใหม่</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Main Content -->
+    <div id="mainContent" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar position-fixed top-0 bottom-0 bg-white border-end">
+    <div class="d-flex align-items-center p-3">
+        <a href="<?= ScriptApp.getService().getUrl() ?>" class="sidebar-logo text-uppercase fw-bold text-decoration-none text-indigo fs-4">Dashboard</a>
+        <i class="sidebar-toggle ri-arrow-left-circle-line ms-auto fs-5 d-none d-md-block"></i>
+    </div>
+    <ul class="sidebar-menu p-3 m-0 mb-0">
+        <li class="sidebar-menu-item active">
+             <a href="<?= ScriptApp.getService().getUrl() ?>">
+                <i class="ri-dashboard-line sidebar-menu-item-icon"></i>
+                ระบบเบิกพัสดุ
+            </a>
+        </li>
+        <li class="sidebar-menu-divider mt-3 mb-1 text-uppercase">บันทึกข้อมูล</li>
+        
+  <!-- เมนูฟอร์ม-->
+ 
+        <li class="sidebar-menu-item has-dropdown">
+            <a href="#">
+                <i class="ri-file-list-3-line sidebar-menu-item-icon"></i>
+                 ตรวจสอบสถานะการเบิกพัสดุ 
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="<?= ScriptApp.getService().getUrl() ?>?page=SupplyRequestStatus">
+                       สถานะการเบิกพัสดุ
+                    </a>
+                </li>
+
+    </ul>
+ <li class="sidebar-menu-item has-dropdown">
+            <a href="#">
+                <i class="ri-file-list-3-line sidebar-menu-item-icon"></i>
+                 เบิกพัสดุ
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+            </a>
+            <ul class="sidebar-dropdown-menu">
+                <li class="sidebar-dropdown-menu-item">
+                    <a href="<?= ScriptApp.getService().getUrl() ?>?page=SupplyRequest">
+                       เบิกพัสดุ
+                    </a>
+                </li>
+
+  </ul>
+
+
+            
+<!-- เมนูสำหรับ Admin -->
+<li id="adminMenu" class="sidebar-menu-item has-dropdown admin-only">
+    <a href="#">
+        <i class="ri-admin-line sidebar-menu-item-icon"></i>
+        จัดการระบบ (Admin)
+        <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+    </a>
+    <ul class="sidebar-dropdown-menu">
+        <li class="sidebar-dropdown-menu-item">
+            <a href="<?= ScriptApp.getService().getUrl() ?>?page=EditUser">
+                จัดการผู้ใช้งาน
+            </a>
+        </li>
+           <li class="sidebar-dropdown-menu-item">
+            <a href="<?= ScriptApp.getService().getUrl() ?>?page=SupplySystem">
+                จัดการพัสดุ
+            </a>
+        </li>
+        <li class="sidebar-dropdown-menu-item">
+            <a href="<?= ScriptApp.getService().getUrl() ?>?page=SupplyApproval">
+                อนุมัติพัสดุ
+            </a>
+        </li>
+        
+        <li class="sidebar-dropdown-menu-item">
+            <a href="#" onclick="showSettingsModal(); return false;">
+                ตั้งค่าระบบ
+            </a>
+        </li>
+    </ul>
+</li>
+    
+</div>
+
+
+
+<div class="sidebar-overlay"></div>
+
+<!-- Modal Settings -->
+<div 
+  class="modal fade" 
+  id="settingsModal" 
+  tabindex="-1" 
+  aria-labelledby="settingsModalLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="settingsModalLabel">
+          <i class="fas fa-cogs me-2"></i>
+          ตั้งค่าระบบ
+        </h5>
+        <button 
+          type="button" 
+          class="btn-close btn-close-white" 
+          data-bs-dismiss="modal" 
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <form id="settingsForm">
+          <!-- Database Settings -->
+          <div class="mb-4">
+            <label for="sheetId" class="form-label">
+              <i class="fas fa-database me-2"></i>
+              ตั้งค่าฐานข้อมูล
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-key"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="sheetId" 
+                placeholder="กรุณาใส่ Sheet ID"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Profile Folder Settings -->
+          <div class="mb-4">
+            <label for="folderId" class="form-label">
+              <i class="fas fa-folder-open me-2"></i>
+              ตั้งค่าโฟลเดอร์โปรไฟล์
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-key"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="folderId" 
+                placeholder="กรุณาใส่ Folder ID"
+                required
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          data-bs-dismiss="modal"
+        >
+          <i class="fas fa-times me-2"></i>
+          ปิด
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          onclick="saveSettings()"
+        >
+          <i class="fas fa-save me-2"></i>
+          บันทึก
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <!-- จบเมนูฟอร์ม-->
+
+        <!-- Main -->
+        <main class="bg-light">
+            <div class="p-2">
+
+
+
+<!-- แถบนำทาง -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container-fluid">
+    <!-- ปุ่มเมนูด้านซ้าย (แสดงเฉพาะบนมือถือ) -->
+    <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="สลับเมนูด้านข้าง">
+       <i class="ri-menu-line sidebar-toggle me-3 d-block d-md-none"></i>
+    </button>
+
+    <!-- โลโก้และชื่อแอป -->
+    <a class="navbar-brand mx-auto fw-bold text-primary" href="<?= ScriptApp.getService().getUrl() ?>">
+      <i class="ri-dashboard-line me-2"></i>แดชบอร์ด
+    </a>
+
+    <!-- ส่วนขวาสุด -->
+    <div class="d-flex align-items-center">
+      <!-- การแจ้งเตือน -->
+      <div class="dropdown me-3">
+        <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="ri-notification-3-line fs-5"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            3
+            <span class="visually-hidden">การแจ้งเตือนที่ยังไม่ได้อ่าน</span>
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+          <li><h6 class="dropdown-header bg-primary text-white">การแจ้งเตือน</h6></li>
+          <li><a class="dropdown-item" href="#"><i class="ri-mail-line me-2"></i>มีข้อความใหม่</a></li>
+          <li><a class="dropdown-item" href="#"><i class="ri-file-list-3-line me-2"></i>รายงานของคุณพร้อมแล้ว</a></li>
+          <li><a class="dropdown-item" href="#"><i class="ri-calendar-event-line me-2"></i>กิจกรรมที่กำลังจะมาถึง</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-center" href="#">ดูการแจ้งเตือนทั้งหมด</a></li>
+        </ul>
+      </div>
+
+      <!-- โปรไฟล์ผู้ใช้ -->
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img class="profile-image rounded-circle me-2" src="https://via.placeholder.com/40" alt="รูปโปรไฟล์" style="width: 40px; height: 40px; object-fit: cover;">
+          <span id="userDisplayName" class="d-none d-md-inline">ไนยชน</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="#" onclick="showLoginForm(); return false;"><i class="ri-login-box-line me-2"></i>เข้าสู่ระบบ</a></li>
+          <li><a class="dropdown-item" href="<?= ScriptApp.getService().getUrl() ?>?page=profile"><i class="ri-user-settings-line me-2"></i>จัดการโปรไฟล์</a></li>
+          <li><a class="dropdown-item" href="<?= ScriptApp.getService().getUrl() ?>?page=report"><i class="ri-file-list-3-line me-2"></i>จัดการข้อมูล</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#" onclick="handleLogout(); return false;"><i class="ri-logout-box-r-line me-2"></i>ออกจากระบบ</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+       <!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการคำขอเบิกพัสดุ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --pending-gradient: linear-gradient(135deg, #ffd36b, #ff9a3c);
+            --approved-gradient: linear-gradient(135deg, #28a745, #20c997);
+            --rejected-gradient: linear-gradient(135deg, #dc3545, #ff4757);
+            --completed-gradient: linear-gradient(135deg, #0dcaf0, #4834d4);
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .summary-card {
+            border-radius: 1.25rem;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            color: white;
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            pointer-events: none;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .summary-card .icon-bg {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 5rem;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+        }
+
+        .bg-pending { background: var(--pending-gradient); }
+        .bg-approved { background: var(--approved-gradient); }
+        .bg-rejected { background: var(--rejected-gradient); }
+        .bg-completed { background: var(--completed-gradient); }
+
+        .main-card {
+            border-radius: 1.25rem;
+            border: none;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-container .form-control {
+            padding-left: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        .form-select {
+            height: 3rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 1rem;
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tr {
+            transition: all 0.2s;
+        }
+
+        .table tr:hover {
+            background-color: rgba(13, 110, 253, 0.02);
+        }
+
+        .badge {
+            padding: 0.6rem 1rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+        }
+
+        .badge.bg-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .badge.bg-approved {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .badge.bg-rejected {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .badge.bg-completed {
+            background: rgba(13, 202, 240, 0.1);
+            color: #0dcaf0;
+        }
+
+        .btn-action {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+            margin: 0 0.2rem;
+        }
+
+        .modal-content {
+            border-radius: 1.25rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            border-radius: 1.25rem 1.25rem 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .pagination {
+            margin-bottom: 0;
+            gap: 0.5rem;
+        }
+
+        .page-link {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem !important;
+            margin: 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Summary Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="summary-card bg-pending p-4">
+                    <div class="icon-bg">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <h6 class="mb-3">
+                        <i class="bi bi-clock me-2"></i>
+                        รอดำเนินการ
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="display-5 fw-bold me-2" id="pendingCount">0</div>
+                        <small>รายการ</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card bg-approved p-4">
+                    <div class="icon-bg">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <h6 class="mb-3">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        อนุมัติแล้ว
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="display-5 fw-bold me-2" id="approvedCount">0</div>
+                        <small>รายการ</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card bg-rejected p-4">
+                    <div class="icon-bg">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                    <h6 class="mb-3">
+                        <i class="bi bi-x-circle-fill me-2"></i>
+                        ปฏิเสธ
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="display-5 fw-bold me-2" id="rejectedCount">0</div>
+                        <small>รายการ</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card bg-completed p-4">
+                    <div class="icon-bg">
+                        <i class="bi bi-flag"></i>
+                    </div>
+                    <h6 class="mb-3">
+                        <i class="bi bi-flag-fill me-2"></i>
+                        เสร็จสิ้น
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="display-5 fw-bold me-2" id="completedCount">0</div>
+                        <small>รายการ</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <!-- Main Content Card -->
+<div class="main-card">
+    <!-- Filter Section -->
+    <div class="card-body border-bottom">
+        <div class="row g-3">
+            <!-- Search Box -->
+            <div class="col-md-4">
+                <label class="form-label text-muted small">ค้นหา</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control border-0 shadow-none" 
+                           id="searchRequest" 
+                           placeholder="ค้นหารายการ, รหัสเบิก, ผู้เบิก...">
+                </div>
+            </div>
+
+            <!-- Curriculum Filter -->
+            <div class="col-md-3">
+                <label class="form-label text-muted small">หลักสูตร</label>
+                <select class="form-select border-0 shadow-none" id="filterCurriculum">
+                    <option value="">หลักสูตรทั้งหมด</option>
+                    <option value="ECC">ECC</option>
+                    <option value="GS">GS</option>
+                    <option value="IEP">IEP</option>
+                </select>
+            </div>
+
+           <!-- Status Filter -->
+<div class="col-md-3">
+    <label class="form-label text-muted small">สถานะ</label>
+    <select class="form-select border-0 shadow-none" id="filterStatus">
+        <option value="">สถานะทั้งหมด</option>
+        <option value="รอดำเนินการ">รอดำเนินการ</option>
+        <option value="อนุมัติแล้ว">อนุมัติแล้ว</option>
+        <option value="ปฏิเสธ">ปฏิเสธ</option>
+        <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+    </select>
+</div>
+
+            <!-- Sort By -->
+            <div class="col-md-2">
+                <label class="form-label text-muted small">เรียงตาม</label>
+                <select class="form-select border-0 shadow-none" id="sortBy">
+                    <option value="date">วันที่ล่าสุด</option>
+                    <option value="status">สถานะ</option>
+                    <option value="curriculum">หลักสูตร</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Filter Section Styles */
+.card-body {
+    background-color: #fff;
+    border-radius: 0.75rem;
+}
+
+.input-group-text {
+    color: #6c757d;
+}
+
+.form-control,
+.form-select {
+    padding: 0.6rem 1rem;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.form-label {
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+/* Hover Effects */
+.form-control:hover,
+.form-select:hover {
+    background-color: #fff;
+}
+
+/* Remove Default Focus Outline */
+.form-control:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+}
+</style>
+
+            <!-- Table Section -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="bi bi-hash me-2"></i>
+                                    รหัสเบิก
+                                </th>
+                                <th>
+                                    <i class="bi bi-person me-2"></i>
+                                    ผู้เบิก
+                                </th>
+                                <th>
+                                    <i class="bi bi-box me-2"></i>
+                                    รายการ
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    สถานะ
+                                </th>
+                                <th>
+                                    <i class="bi bi-chat-left-text me-2"></i>
+                                    หมายเหตุ
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-gear me-2"></i>
+                                    ดำเนินการ
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination Footer -->
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div id="pageInfo" class="text-muted"></div>
+                    <nav id="pagination" aria-label="Page navigation"></nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approval Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1">
+   <div class="modal-dialog modal-dialog-centered">
+       <div class="modal-content">
+           <div class="modal-header bg-primary text-white">
+               <h5 class="modal-title">
+                   <i class="bi bi-clipboard-check me-2"></i>
+                   จัดการคำขอเบิกพัสดุ
+               </h5>
+               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+           </div>
+           <div class="modal-body">
+               <form id="approvalForm">
+                   <div class="card bg-light mb-4">
+                       <div class="card-body" id="requestDetails"></div>
+                   </div>
+                   
+                   <div class="mb-4">
+                       <label class="form-label">
+                           <i class="bi bi-gear-fill me-2"></i>
+                           การดำเนินการ
+                       </label>
+                       <div class="d-grid gap-2" id="actionButtons">
+                           <!-- ปุ่มจะถูกเพิ่มโดย JavaScript ตามสถานะ -->
+                       </div>
+                   </div>
+
+                   <div class="mb-3">
+                       <label class="form-label">
+                           <i class="bi bi-chat-square-text-fill me-2"></i>
+                           หมายเหตุ
+                       </label>
+                       <textarea 
+                           class="form-control" 
+                           id="approvalNote" 
+                           rows="3" 
+                           required
+                           placeholder="กรุณาระบุรายละเอียดเพิ่มเติม..."
+                           style="border-radius: 0.75rem; resize: none;"
+                       ></textarea>
+                       <div class="invalid-feedback">
+                           <i class="bi bi-exclamation-circle me-2"></i>
+                           กรุณาระบุหมายเหตุ
+                       </div>
+                   </div>
+                   
+                   <input type="hidden" id="approvalRequestCode">
+               </form>
+           </div>
+           <div class="modal-footer border-top">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                   <i class="bi bi-x-lg me-2"></i>
+                   ยกเลิก
+               </button>
+               <button type="submit" form="approvalForm" class="btn btn-primary">
+                   <i class="bi bi-check-lg me-2"></i>
+                   บันทึก
+               </button>
+           </div>
+       </div>
+   </div>
+</div>
+
+    <!-- Improved Footer -->
+    <footer class="py-4 mt-auto">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+            </div>
+            <hr class="my-4">
+            <div class="text-center text-muted">
+                <small>&copy; 2024 ระบบบันทึกข้อมูลครู. สงวนลิขสิทธิ์. จัดทำโดยนายไนยชน ผลทอง ผู้พัฒนาระบบ</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+    <?!= include('utils.js'); ?>
+    <?!= include('main.js'); ?>
+    <?!= include('user.js'); ?>
+    <?!= include('admin.js'); ?>
+    <?!= include('login.js'); ?>
+    <?!= include('logging.js'); ?>
+    <?!= include('userManagement.js'); ?>
+    <?!= include('profile-management.js'); ?>
+    <?!= include('EditUser.js'); ?>
+    <?!= include('Setting.js'); ?>
+    <?!= include('SupplyApproval.js') ?>
+    
+</body>
+</html>

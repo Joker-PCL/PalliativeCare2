@@ -1,0 +1,91 @@
+<script>
+  function handleProfileSubmit(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (this.checkValidity()) {
+      var newPassword = $('#profilePassword').val().trim();
+      var userData = {
+        Name: $('#profileName').val().trim(),
+        Email: $('#profileEmail').val().trim(),
+      };
+
+      if (newPassword) {
+        var passwordStrength = checkPasswordStrength(newPassword);
+        if (!passwordStrength.valid) {
+          showAlert(passwordStrength.message, 'warning');
+          return;
+        }
+        userData.Password = newPassword;
+      }
+
+      if (confirm('คุณแน่ใจหรือไม่ที่จะบันทึกการเปลี่ยนแปลงนี้?')) {
+        google.script.run
+          .withSuccessHandler(onProfileUpdateSuccess)
+          .withFailureHandler(onProfileUpdateFailure)
+          .updateUserData(userData.Email, userData);
+      }
+    }
+
+    $(this).addClass('was-validated');
+  }
+
+  function onProfileUpdateSuccess(result) {
+    if (result.success) {
+      showAlert('อัพเดตข้อมูลสำเร็จ', 'success');
+      $('#profileModal').modal('hide');
+      var storedSession = localStorage.getItem('userSession');
+      if (storedSession) {
+        var session = JSON.parse(storedSession);
+        session.user.name = $('#profileName').val().trim();
+        localStorage.setItem('userSession', JSON.stringify(session));
+      }
+      checkLoginStatus();
+    } else {
+      showAlert(result.message || 'ไม่สามารถอัพเดตข้อมูลได้', 'danger');
+    }
+  }
+
+  function onProfileUpdateFailure(error) {
+    showAlert('เกิดข้อผิดพลาดในการอัพเดตข้อมูล: ' + error, 'danger');
+  }
+
+  function checkPasswordStrength(password) {
+    var strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.match(/[a-z]+/)) strength++;
+    if (password.match(/[A-Z]+/)) strength++;
+    if (password.match(/[0-9]+/)) strength++;
+    if (password.match(/[$@#&!]+/)) strength++;
+
+    switch (strength) {
+      case 0:
+      case 1:
+      case 2:
+        return { valid: false, message: 'รหัสผ่านอ่อนเกินไป กรุณาใช้ตัวอักษรตัวเล็ก ตัวใหญ่ ตัวเลข และอักขระพิเศษ' };
+      case 3:
+        return { valid: true, message: 'รหัสผ่านปานกลาง' };
+      case 4:
+      case 5:
+        return { valid: true, message: 'รหัสผ่านแข็งแรง' };
+    }
+  }
+
+  function loadUserData(email) {
+    google.script.run
+      .withSuccessHandler(function (userData) {
+        if (userData) {
+          console.log('User data:', userData);
+          // ทำอะไรกับข้อมูลผู้ใช้ที่ได้รับ
+        } else {
+          console.error('User not found');
+          showAlert('ไม่พบข้อมูลผู้ใช้', 'warning');
+        }
+      })
+      .withFailureHandler(function (error) {
+        console.error('Error loading user data:', error);
+        showAlert('เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้: ' + error, 'danger');
+      })
+      .getUserData(email);
+  }
+</script>
