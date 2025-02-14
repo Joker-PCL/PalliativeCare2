@@ -14,80 +14,201 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <?!= include('css-login') ?>
+    <!-- <?!= include('css-login') ?> -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+      :root {
+        --primary-color: #4f46e5;
+        --primary-hover: #4338ca;
+        --bg-color: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        --text-color: #1f2937;
+        --muted-color: #6b7280;
+        --light-color: #f9fafb;
+      }
+
+      body {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Prompt', sans-serif;
+        background: var(--bg-color);
+        color: var(--text-color);
+      }
+
+      .container-form {
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none; /* ป้องกันการคลิก */
+        /* position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: 300px;
+        padding: 20px;
+        text-align: center;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px; */
+      }
+
+      .container-form.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: auto;
+      }
+
+      .card {
+        background-color: #ffffff;
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        background-color: transparent;
+      }
+
+      .text-primary {
+        color: var(--primary-color) !important;
+      }
+
+      .form-label {
+        font-weight: 500;
+        color: var(--text-color);
+      }
+
+      .form-control,
+      .input-group-text,
+      .btn-light {
+        background-color: var(--light-color);
+        border: none;
+        padding: 0.75rem 1rem;
+        font-size: 16px !important;
+      }
+
+      .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+      }
+
+      .input-group-text {
+        color: var(--primary-color);
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover,
+      .btn-primary:focus {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      }
+
+      .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .text-muted {
+        color: var(--muted-color) !important;
+      }
+
+      @media (max-width: 576px) {
+        .card-body {
+          padding: 1.5rem;
+        }
+      }
+    </style>
   </head>
 
   <body>
+    <script>
+      function toggleLogin() {
+        document.getElementById('loginContainer').classList.toggle('show');
+        document.getElementById('registrationContainer').classList.toggle('show');
+      }
+    </script>
+
     <!-- Login Container -->
-    <div id="loginContainer" class="container vh-100" style="display: none">
-      <div class="row h-100 align-items-center justify-content-center">
-        <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
-          <div class="card border-0 rounded-4 shadow-lg">
-            <div class="card-header text-center border-0 pt-4 pb-0 position-relative">
-              <div class="logo-container mb-3">
-                <img
-                  src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png"
-                  alt="Logo"
-                  class="img-fluid rounded-circle shadow"
-                  style="width: 100px; height: 100px; object-fit: cover"
-                />
+    <div id="loginContainer" class="container container-form show">
+      <div class="container vh-100">
+        <div class="row h-100 align-items-center justify-content-center">
+          <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <div class="card border-0 rounded-4 shadow-lg">
+              <div class="card-header text-center border-0 pt-4 pb-0 position-relative">
+                <div class="logo-container mb-3">
+                  <img
+                    src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png"
+                    alt="Logo"
+                    class="img-fluid rounded-circle shadow"
+                    style="width: 100px; height: 100px; object-fit: cover"
+                  />
+                </div>
+                <h2 class="fw-bold text-primary mb-0">เข้าสู่ระบบ</h2>
+                <p class="text-muted mt-2">ยินดีต้อนรับสู่ Pilliative Care</p>
               </div>
-              <h2 class="fw-bold text-primary mb-0">เข้าสู่ระบบ</h2>
-              <p class="text-muted mt-2">ยินดีต้อนรับสู่ Pilliative Care</p>
-            </div>
-            <div class="card-body p-4 p-md-5">
-              <form id="loginForm">
-                <div class="form-input was-validated mb-4">
-                  <label for="loginEmail" class="form-label">
-                    อีเมล
-                    <span class="text-danger ps-2"></span>
-                  </label>
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light text-primary border-0"><i class="ri-mail-line"></i></span>
-                    <input
-                      type="email"
-                      class="form-control bg-light border-0"
-                      id="loginEmail"
-                      placeholder="your.email@example.com"
-                      autocomplete="off"
-                      required
-                    />
+              <div class="card-body p-4 p-md-5">
+                <form id="loginForm">
+                  <div class="form-input was-validated mb-4">
+                    <label for="loginEmail" class="form-label">
+                      อีเมล
+                      <span class="text-danger ps-2"></span>
+                    </label>
+                    <div class="input-group input-group-lg">
+                      <span class="input-group-text bg-light text-primary border-0"><i class="ri-mail-line"></i></span>
+                      <input
+                        type="email"
+                        class="form-control bg-light border-0"
+                        id="loginEmail"
+                        placeholder="your.email@example.com"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
-                <div class="form-input mb-4">
-                  <label for="loginPassword" class="form-label">
-                    รหัสผ่าน
-                    <span class="text-danger ps-2"></span>
-                  </label>
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
-                    <input
-                      type="password"
-                      class="form-control bg-light border-0"
-                      id="loginPassword"
-                      placeholder="••••••••"
-                      autocomplete="off"
-                      required
-                    />
-                    <button class="btn btn-light border-0 toggle-password" type="button" data-target="loginPassword">
-                      <i class="ri-eye-line"></i>
-                    </button>
+                  <div class="form-input mb-4">
+                    <label for="loginPassword" class="form-label">
+                      รหัสผ่าน
+                      <span class="text-danger ps-2"></span>
+                    </label>
+                    <div class="input-group input-group-lg">
+                      <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
+                      <input
+                        type="password"
+                        class="form-control bg-light border-0"
+                        id="loginPassword"
+                        placeholder="••••••••"
+                        autocomplete="off"
+                        required
+                      />
+                      <span class="input-group-text bg-light text-secondary border-0 toggle-password"><i class="fa fa-eye"></i></span>
+                    </div>
                   </div>
+                  <div class="text-end mb-3">
+                    <a href="#" class="text-muted text-decoration-none small" onclick="showForgotPasswordModal()">
+                      <i class="ri-question-line"></i> ลืมรหัสผ่าน?
+                    </a>
+                  </div>
+                  <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">เข้าสู่ระบบ</button>
+                  </div>
+                </form>
+                <div class="text-center mt-3">
+                  <p class="mb-0">
+                    ยังไม่มีบัญชี?
+                    <a href="#" class="text-primary fw-bold text-decoration-none" onclick="toggleForm('registrationContainer')">สมัครสมาชิก</a>
+                  </p>
                 </div>
-                <div class="text-end mb-3">
-                  <a href="#" class="text-muted text-decoration-none small" onclick="showForgotPasswordModal()">
-                    <i class="ri-question-line"></i> ลืมรหัสผ่าน?
-                  </a>
-                </div>
-                <div class="d-grid">
-                  <button type="submit" class="btn btn-primary btn-lg">เข้าสู่ระบบ</button>
-                </div>
-              </form>
-              <div class="text-center mt-3">
-                <p class="mb-0">
-                  ยังไม่มีบัญชี?
-                  <a href="#" class="text-primary fw-bold text-decoration-none" onclick="toggleForm('registrationContainer')">สมัครสมาชิก</a>
-                </p>
               </div>
             </div>
           </div>
@@ -96,97 +217,95 @@
     </div>
 
     <!-- Registration Container -->
-    <div id="registrationContainer" class="container vh-100" style="display: block">
-      <div class="row h-100 align-items-center justify-content-center">
-        <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
-          <div class="card border-0 rounded-4 shadow-lg">
-            <div class="card-header text-center border-0 pt-4 pb-0 position-relative">
-              <div class="logo-container mb-3">
-                <img
-                  src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png"
-                  alt="Logo"
-                  class="img-fluid rounded-circle shadow"
-                  style="width: 100px; height: 100px; object-fit: cover"
-                />
+    <div id="registrationContainer" class="container container-form">
+      <div class="container vh-100">
+        <div class="row h-100 align-items-center justify-content-center">
+          <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <div class="card border-0 rounded-4 shadow-lg">
+              <div class="card-header text-center border-0 pt-4 pb-0 position-relative">
+                <div class="logo-container mb-3">
+                  <img
+                    src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png"
+                    alt="Logo"
+                    class="img-fluid rounded-circle shadow"
+                    style="width: 100px; height: 100px; object-fit: cover"
+                  />
+                </div>
+                <h2 class="fw-bold text-primary mb-0">สมัครสมาชิก</h2>
+                <p class="text-muted mt-2">กรอกข้อมูลเพื่อสมัครเข้าใช้งานระบบ</p>
               </div>
-              <h2 class="fw-bold text-primary mb-0">สมัครสมาชิก</h2>
-              <p class="text-muted mt-2">กรอกข้อมูลเพื่อสมัครเข้าใช้งานระบบ</p>
-            </div>
-            <div class="card-body p-4 p-md-5">
-              <form id="registrationForm">
-                <div class="form-input mb-4">
-                  <label for="registerEmail" class="form-label">
-                    อีเมล
-                    <span class="text-danger ps-2"></span>
-                  </label>
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light text-primary border-0"><i class="ri-mail-line"></i></span>
-                    <input
-                      type="email"
-                      class="form-control bg-light border-0"
-                      id="registerEmail"
-                      placeholder="your.email@example.com"
-                      autocomplete="off"
-                      required
-                    />
+              <div class="card-body p-4 p-md-5">
+                <form id="registrationForm">
+                  <div class="form-input was-validated mb-4">
+                    <label for="registerEmail" class="form-label">
+                      อีเมล
+                      <span class="text-danger ps-2"></span>
+                    </label>
+                    <div class="input-group input-group-lg">
+                      <span class="input-group-text bg-light text-primary border-0"><i class="ri-mail-line"></i></span>
+                      <input
+                        type="email"
+                        class="form-control bg-light border-0"
+                        id="registerEmail"
+                        placeholder="your.email@example.com"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div class="form-input mb-4">
-                  <label for="registerPassword" class="form-label">
-                    รหัสผ่าน
-                    <span class="text-danger ps-2"></span>
-                  </label>
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
-                    <input
-                      type="password"
-                      class="form-control bg-light border-0"
-                      id="registerPassword"
-                      placeholder="••••••••"
-                      autocomplete="off"
-                      required
-                    />
-                    <button class="btn btn-light border-0 toggle-password" type="button" data-target="registerPassword">
-                      <i class="ri-eye-line"></i>
-                    </button>
+                  <div class="form-input mb-4">
+                    <label for="registerPassword" class="form-label">
+                      รหัสผ่าน
+                      <span class="text-danger ps-2"></span>
+                    </label>
+                    <div class="input-group input-group-lg">
+                      <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
+                      <input
+                        type="password"
+                        class="form-control bg-light border-0"
+                        id="registerPassword"
+                        placeholder="••••••••"
+                        autocomplete="off"
+                        required
+                      />
+                      <span class="input-group-text bg-light text-secondary border-0 toggle-password"><i class="fa fa-eye"></i></span>
+                    </div>
+                    <div class="password-requirements text-muted small mt-1">
+                      <i class="ri-information-line"></i>
+                      รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร ประกอบด้วยตัวอักษรตัวเล็ก ตัวใหญ่ ตัวเลขและอักขระพิเศษ
+                    </div>
                   </div>
-                  <div class="password-requirements text-muted small mt-1">
-                    <i class="ri-information-line"></i>
-                    รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร ประกอบด้วยตัวอักษรตัวเล็ก ตัวใหญ่ ตัวเลขและอักขระพิเศษ
-                  </div>
-                </div>
 
-                <div class="form-input mb-4">
-                  <label for="registerConfirmPassword" class="form-label">
-                    ยืนยันรหัสผ่าน
-                    <span class="text-danger ps-2"></span>
-                  </label>
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
-                    <input
-                      type="password"
-                      class="form-control bg-light border-0"
-                      id="registerConfirmPassword"
-                      placeholder="••••••••"
-                      autocomplete="off"
-                      required
-                    />
-                    <button class="btn btn-light border-0 toggle-password" type="button" data-target="registerConfirmPassword">
-                      <i class="ri-eye-line"></i>
-                    </button>
+                  <div class="form-input mb-4">
+                    <label for="registerConfirmPassword" class="form-label">
+                      ยืนยันรหัสผ่าน
+                      <span class="text-danger ps-2"></span>
+                    </label>
+                    <div class="input-group input-group-lg">
+                      <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line"></i></span>
+                      <input
+                        type="password"
+                        class="form-control bg-light border-0"
+                        id="registerConfirmPassword"
+                        placeholder="••••••••"
+                        autocomplete="off"
+                        required
+                      />
+                      <span class="input-group-text bg-light text-secondary border-0 toggle-password"><i class="fa fa-eye"></i></span>
+                    </div>
                   </div>
-                </div>
 
-                <div class="d-grid">
-                  <button type="submit" class="btn btn-primary btn-lg">เข้าสู่ระบบ</button>
+                  <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg" disabled>สมัครสมาชิก</button>
+                  </div>
+                </form>
+                <div class="text-center mt-3">
+                  <p class="mb-0">
+                    มีบัญชีแล้วคลิ๊ก
+                    <a href="#" class="text-primary fw-bold text-decoration-none" onclick="toggleForm('loginContainer')">เข้าสู่ระบบ</a>
+                  </p>
                 </div>
-              </form>
-              <div class="text-center mt-3">
-                <p class="mb-0">
-                  มีบัญชีแล้วคลิ๊ก
-                  <a href="#" class="text-primary fw-bold text-decoration-none" onclick="toggleForm('loginContainer')">เข้าสู่ระบบ</a>
-                </p>
               </div>
             </div>
           </div>
@@ -196,9 +315,43 @@
 
     <!-- Onload -->
     <script>
-      const SERVER_STATUS = JSON.parse('<?!= SERVER_STATUS() ?>');
-      const ROLE_DEFINITION = JSON.parse('<?!= ROLE_DEFINITION() ?>');
-      const STORAGE_KEY = JSON.parse('<?!= STORAGE_KEY() ?>');
+      const SERVER_STATUS = {
+        PASSWORD_INCORRECT: 'PASSWORD_INCORRECT', // รหัสผ่านไม่ถูกต้อง
+        USER_NOT_FOUND: 'USER_NOT_FOUND', // ไม่พบผู้ใช้
+        LOGIN_SUCCESS: 'LOGIN_SUCCESS', // เข้าสู่ระบบสำเร็จ
+        LOGIN_FAILED: 'LOGIN_FAILED', // เข้าสู่ระบบล้มเหลว
+        REGISTER_SUCCESS: 'REGISTER_SUCCESS', // ลงทะเบียนสำเร็จ
+        REGISTER_FAILED: 'REGISTER_FAILED', // ลงทะเบียนล้มเหลว
+        USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS', // ผู้ใช้มีอยู่แล้ว
+        INVALID_EMAIL: 'INVALID_EMAIL', // อีเมลไม่ถูกต้อง
+        INVALID_TOKEN: 'INVALID_TOKEN', // โทเค็นไม่ถูกต้อง
+        TOKEN_EXPIRED: 'TOKEN_EXPIRED', // โทเค็นหมดอายุ
+        ACCESS_DENIED: 'ACCESS_DENIED', // การเข้าถึงถูกปฏิเสธ
+        SERVER_ERROR: 'SERVER_ERROR', // ข้อผิดพลาดของเซิร์ฟเวอร์
+        REQUEST_SUCCESS: 'REQUEST_SUCCESS', // การร้องขอสำเร็จ
+        REQUEST_FAILED: 'REQUEST_FAILED', // การร้องขอล้มเหลว
+        DATA_NOT_FOUND: 'DATA_NOT_FOUND', // ไม่พบข้อมูล
+        DATA_UPDATED: 'DATA_UPDATED', // อัปเดตข้อมูลสำเร็จ
+        DATA_DELETED: 'DATA_DELETED', // ลบข้อมูลสำเร็จ
+        INVALID_REQUEST: 'INVALID_REQUEST', // การร้องขอไม่ถูกต้อง
+        UNAUTHORIZED: 'UNAUTHORIZED', // ไม่ได้รับอนุญาต
+        FORBIDDEN: 'FORBIDDEN', // ห้ามเข้าถึง
+        RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED', // เกินขีดจำกัดการร้องขอ
+        MAINTENANCE_MODE: 'MAINTENANCE_MODE', // เซิร์ฟเวอร์อยู่ในโหมดบำรุงรักษา
+      };
+      const ROLE_DEFINITION = {
+        ADMIN: 'ADMIN', // ผู้ดูแลระบบ
+        USER: 'USER', // ผู้ใช้งาน
+      };
+      const STORAGE_KEY = {
+        JWT_TOKEN: 'JWT_TOKEN',
+        USER_DATA: 'USER_DATA',
+      };
+    </script>
+    <script>
+      // const SERVER_STATUS = JSON.parse('<?!= SERVER_STATUS() ?>');
+      // const ROLE_DEFINITION = JSON.parse('<?!= ROLE_DEFINITION() ?>');
+      // const STORAGE_KEY = JSON.parse('<?!= STORAGE_KEY() ?>');
 
       const spiner = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
 
@@ -209,21 +362,55 @@
         } else {
           console.log('Please enter');
         }
+
+        const toggle_password = document.querySelectorAll('.toggle-password');
+        toggle_password.forEach((el) => {
+          el.addEventListener('click', () => {
+            const input = el.previousElementSibling;
+            const type = input.type;
+            if (type === 'password') {
+              input.type = 'text';
+              el.innerHTML = '<i class="fa fa-eye-slash"></i>';
+            } else {
+              input.type = 'password';
+              el.innerHTML = '<i class="fa fa-eye"></i>';
+            }
+          });
+        });
       });
 
       // Toggle form
-      function toggleForm(formContainerID) {
+      function toggleForm() {
         event.preventDefault();
         const loginContainer = document.querySelector('#loginContainer');
         const registrationContainer = document.querySelector('#registrationContainer');
 
-        if (formContainerID === 'loginContainer') {
-          loginContainer.style.display = 'block';
-          registrationContainer.style.display = 'none';
-        } else {
-          loginContainer.style.display = 'none';
-          registrationContainer.style.display = 'block';
+        loginContainer.classList.toggle('show');
+        registrationContainer.classList.toggle('show');
+      }
+
+      function checkPasswordStrength(password) {
+        if (password.length < 8) {
+          return {
+            valid: false,
+            message: 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร',
+          };
         }
+
+        let strength = 0;
+        if (password.match(/[a-z]+/)) strength++;
+        if (password.match(/[A-Z]+/)) strength++;
+        if (password.match(/[0-9]+/)) strength++;
+        if (password.match(/[$@#&!]+/)) strength++;
+
+        if (strength < 3) {
+          return {
+            valid: false,
+            message: 'รหัสผ่านต้องประกอบด้วยตัวอักษรตัวเล็ก ตัวใหญ่ ตัวเลข และอักขระพิเศษอย่างน้อย 3 ประเภท',
+          };
+        }
+
+        return { valid: true };
       }
     </script>
 
@@ -238,6 +425,7 @@
 
       function onSubmitLoginForm(e) {
         e.preventDefault();
+
         loginSubmitButton.innerHTML = `${spiner} กำลังตรวจสอบข้อมูล`;
         loginSubmitButton.disabled = true;
 
@@ -301,9 +489,23 @@
       const registrationSubmitButton = registrationForm.querySelector("button[type='submit']");
 
       registrationForm.addEventListener('submit', onSubmitRegistrationForm);
+      registerPasswordEl.addEventListener('keyup', validatePassword);
+      registerConfirmPasswordEl.addEventListener('keyup', validatePassword);
 
       function onSubmitRegistrationForm(e) {
         e.preventDefault();
+
+        if (registerPasswordEl.value !== registerConfirmPasswordEl.value) {
+          registrationSubmitButton.disabled = true;
+          [registerPasswordEl, registerConfirmPasswordEl].forEach((el) => {
+            const passwordDiv = el.closest('.form-input');
+            const passwordSpan = passwordDiv.querySelector('span');
+            passwordSpan.textContent = '** รหัสผ่านไม่ตรงกัน **';
+          });
+
+          return;
+        }
+
         registrationSubmitButton.innerHTML = `${spiner} กำลังดำเนินการ`;
         registrationSubmitButton.disabled = true;
 
@@ -332,6 +534,30 @@
             }
           }
         }, 3000);
+      }
+
+      function validatePassword(e) {
+        const value = e.target.value;
+        const validation = checkPasswordStrength(value);
+        resetValidation();
+
+        if (!validation.valid) {
+          registrationSubmitButton.disabled = true;
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          registrationSubmitButton.disabled = false;
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      }
+
+      function resetValidation() {
+        [registerPasswordEl, registerConfirmPasswordEl].forEach((el) => {
+          const passwordDiv = el.closest('.form-input');
+          const passwordSpan = passwordDiv.querySelector('span');
+          passwordSpan.textContent = '';
+        });
       }
     </script>
   </body>
