@@ -378,7 +378,7 @@ body {
   &>img {
     width: 50px;
     height: 50px;
-    border-radius: 50%;
+    /* border-radius: 50%; */
   }
 }
 
@@ -394,7 +394,7 @@ body {
 }
 
 .status-label {
-  font-size: 0.9rem;
+  font-size: 1.0rem;
   font-weight: 500;
   opacity: 0.9;
 }
