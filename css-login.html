@@ -10,13 +10,42 @@
     --light-color: #f9fafb;
   }
 
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: 'Kodchasan', sans-serif;
+  }
+
   body {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
     font-family: 'Prompt', sans-serif;
-    background: var(--bg-color);
+    background-image: var(--bg-color);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
     color: var(--text-color);
+  }
+
+  .container {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none; /* ป้องกันการคลิก */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    max-width: 400px;
+    padding: 35px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  .container.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
   }
 
   .card {
@@ -81,11 +110,5 @@
 
   .text-muted {
     color: var(--muted-color) !important;
-  }
-
-  @media (max-width: 576px) {
-    .card-body {
-      padding: 1.5rem;
-    }
   }
 </style>
