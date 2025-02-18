@@ -1,6 +1,1 @@
 node_modules/
-__pycache__/
-.env/
-dist/
-build/
-main.spec
