@@ -1,25 +1,51 @@
-# Link ตัวอย่าง
-    https://youtu.be/iQfs4PM2UYA?si=jEG0KzftEKIMwCaR
-    https://github.com/google/clasp
+# Google Apps Script with Clasp
 
-# คำสั่งติดตั้ง
-    cd project
-    npm install -g @google/clasp
-    clasp login
+## 📌 ตัวอย่าง
 
-    ** เปิด Google Apps Script API
-    ** Then enable the Google Apps Script API: https://script.google.com/home/usersettings
+[ดูวิดีโอตัวอย่างบน YouTube](https://youtu.be/iQfs4PM2UYA?si=jEG0KzftEKIMwCaR)
 
-    npm init
-    clasp clone ...scriptID...
-    clasp -v  > v.1.15
-    npm i -D @types/google-apps-script
+[Google Clasp บน GitHub](https://github.com/google/clasp)
 
-    ** คำสั่ง update code จาก vscode ไปยัง google app script
-        clasp push
+## 🔧 คำสั่งติดตั้ง
 
-    ** คำสั่ง update code จาก google app script มายัง vscode
-        clasp pull
+```sh
+cd project
+npm install -g @google/clasp
+clasp login
+```
 
-    ** คำสั่ง auto update code จาก vscode ไปยัง google app script
-        clasp push -w
+### เปิด Google Apps Script API
+
+1. ไปที่ [Google Apps Script API](https://script.google.com/home/usersettings)
+2. เปิดใช้งาน API
+
+```sh
+npm init
+clasp clone ...scriptID...
+clasp -v  # ตรวจสอบเวอร์ชัน (ควรมากกว่า v1.15)
+npm i -D @types/google-apps-script
+```
+
+## 🔄 คำสั่งอัปเดตโค้ด
+
+### อัปโหลดโค้ดจาก VS Code ไปยัง Google Apps Script
+
+```sh
+clasp push
+```
+
+### ดึงโค้ดจาก Google Apps Script มายัง VS Code
+
+```sh
+clasp pull
+```
+
+### อัปเดตโค้ดอัตโนมัติแบบเรียลไทม์
+
+```sh
+clasp push -w
+```
+
+---
+
+📌 **หมายเหตุ**: ตรวจสอบให้แน่ใจว่าได้ล็อกอินและเปิดใช้งาน Google Apps Script API ก่อนใช้งาน Clasp
