@@ -157,6 +157,11 @@
 .sidebar-menu {
   list-style-type: none;
 }
+
+.sidebar-menu .section-user-data {
+  display: none;
+}
+
 .sidebar-menu-item {
   margin-bottom: 0.25rem;
 }
@@ -388,6 +393,7 @@ nav {
   /* end: Sidebar */
 
   /* start: Main */
+  .div-navbar,
   main {
     transition: padding-left 0.5s;
     padding-left: 17.5rem;

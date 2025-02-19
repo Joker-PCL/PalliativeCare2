@@ -1,0 +1,76 @@
+/* Table */
+.dt-container > .dt-layout-row:first-child {
+  display: none !important;
+}
+
+.dt-paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dt-empty {
+  text-align: center !important;
+}
+
+table {
+  & > thead > tr {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    vertical-align: center !important;
+
+    & > th {
+      font-size: 16px;
+      padding-top: 15px !important;
+      text-align: left !important;
+      padding-bottom: 15px !important;
+      background-color: #2ca4bf;
+      border: none !important;
+      color: #fff;
+
+      &:focus-visible {
+        outline: 2px solid #2ca4bf;
+      }
+    }
+
+    & :first-child {
+      border-top-left-radius: 10px !important;
+    }
+
+    & :last-child {
+      border-top-right-radius: 10px !important;
+    }
+    &:hover {
+      outline: none !important;
+    }
+  }
+
+  & > tbody > tr {
+    cursor: pointer;
+
+    &:nth-child(odd) {
+      background-color: rgb(233, 233, 233) !important;
+    }
+
+    &:nth-child(even) {
+      background-color: rgba(255, 255, 255, 1) !important;
+    }
+
+    &:hover {
+      background-color: rgba(69, 70, 71, 0.35) !important;
+      color: #ffffff !important;
+    }
+
+    & > td {
+      font-size: 15px;
+      text-align: left !important;
+
+      &:first-child > img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+    }
+  }
+}

@@ -15,18 +15,20 @@
       rel="stylesheet"
     />
 
+    <!-- Data tables -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="style2.css" />
-
-    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" href="table.css" />
   </head>
 
   <body>
@@ -50,73 +52,87 @@
           </li>
           <li class="sidebar-menu-divider mt-3 mb-1 text-uppercase">รายการบันทึก</li>
 
-          <!-- ข้อมูลผู้ป่วย -->
-          <li class="sidebar-menu-item has-dropdown mb-2">
-            <a href="#">
-              <i class="bi bi-person-lines-fill sidebar-menu-item-icon"></i>
-              <span class="sidebar-dropdown-menu-text">ข้อมูลผู้ป่วย</span>
-              <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
-            </a>
-            <ul class="sidebar-dropdown-menu" style="display: none">
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="patientInformation" data-child-page-id="patientInformation_1">
-                <a href="#"> ข้อมูลทั่วไป </a>
-              </li>
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="patientInformation" data-child-page-id="patientInformation_2">
-                <a href="#"> Consult for </a>
-              </li>
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="patientInformation" data-child-page-id="patientInformation_3">
-                <a href="#"> ข้อมูลสภาวะสุขภาพ </a>
-              </li>
-            </ul>
-          </li>
-          <!-- การดูแลรักษา -->
-          <li class="sidebar-menu-item has-dropdown mb-2">
-            <a href="#">
-              <i class="bi bi-clipboard2-pulse-fill sidebar-menu-item-icon"></i>
-              <span class="sidebar-dropdown-menu-text">การดูแลรักษา</span>
-              <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
-            </a>
-            <ul class="sidebar-dropdown-menu" style="display: none">
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="treatment" data-child-page-id="treatment_1">
-                <a href="#">Family meeting, Advance care plan</a>
-              </li>
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="treatment" data-child-page-id="treatment_2">
-                <a href="#">Treatment</a>
-              </li>
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="treatment" data-child-page-id="treatment_3">
-                <a href="#">Education&training programs</a>
-              </li>
-            </ul>
-          </li>
-          <!-- วางแผนจำหน่าย  -->
-          <li class="sidebar-menu-item has-dropdown mb-2">
-            <a href="#">
-              <i class="bi bi-calendar-week sidebar-menu-item-icon"></i>
-              <span class="sidebar-dropdown-menu-text">วางแผนจำหน่าย </span>
-              <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
-            </a>
-            <ul class="sidebar-dropdown-menu" style="display: none">
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="planning" data-child-page-id="planning_1">
-                <a href="#">ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม.</a>
-              </li>
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="planning" data-child-page-id="planning_2">
-                <a href="#">เยี่ยมบ้าน,ส่งต่อเครือข่าย</a>
-              </li>
-            </ul>
-          </li>
-          <!-- การดูแลหลังเสียชีวิต   -->
-          <li class="sidebar-menu-item has-dropdown mb-2">
-            <a href="#">
-              <i class="bi bi-search-heart sidebar-menu-item-icon"></i>
-              <span class="sidebar-dropdown-menu-text">การดูแลหลังเสียชีวิต</span>
-              <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
-            </a>
-            <ul class="sidebar-dropdown-menu" style="display: none">
-              <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="bereavementCare" data-child-page-id="bereavementCare_1">
-                <a href="#">ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ</a>
-              </li>
-            </ul>
-          </li>
+          <section class="section-user-data">
+            <!-- ข้อมูลผู้ป่วย -->
+            <li class="sidebar-menu-item has-dropdown mb-2">
+              <a href="#">
+                <i class="bi bi-person-lines-fill sidebar-menu-item-icon"></i>
+                <span class="sidebar-dropdown-menu-text">ข้อมูลผู้ป่วย</span>
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+              </a>
+              <ul class="sidebar-dropdown-menu" style="display: none">
+                <li
+                  class="sidebar-dropdown-menu-item list-menu-page"
+                  data-main-page-id="patientInformation"
+                  data-child-page-id="patientInformation_1"
+                >
+                  <a href="#"> ข้อมูลทั่วไป </a>
+                </li>
+                <li
+                  class="sidebar-dropdown-menu-item list-menu-page"
+                  data-main-page-id="patientInformation"
+                  data-child-page-id="patientInformation_2"
+                >
+                  <a href="#"> Consult for </a>
+                </li>
+                <li
+                  class="sidebar-dropdown-menu-item list-menu-page"
+                  data-main-page-id="patientInformation"
+                  data-child-page-id="patientInformation_3"
+                >
+                  <a href="#"> ข้อมูลสภาวะสุขภาพ </a>
+                </li>
+              </ul>
+            </li>
+            <!-- การดูแลรักษา -->
+            <li class="sidebar-menu-item has-dropdown mb-2">
+              <a href="#">
+                <i class="bi bi-clipboard2-pulse-fill sidebar-menu-item-icon"></i>
+                <span class="sidebar-dropdown-menu-text">การดูแลรักษา</span>
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+              </a>
+              <ul class="sidebar-dropdown-menu" style="display: none">
+                <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="treatment" data-child-page-id="treatment_1">
+                  <a href="#">Family meeting, Advance care plan</a>
+                </li>
+                <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="treatment" data-child-page-id="treatment_2">
+                  <a href="#">Treatment</a>
+                </li>
+                <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="treatment" data-child-page-id="treatment_3">
+                  <a href="#">Education&training programs</a>
+                </li>
+              </ul>
+            </li>
+            <!-- วางแผนจำหน่าย  -->
+            <li class="sidebar-menu-item has-dropdown mb-2">
+              <a href="#">
+                <i class="bi bi-calendar-week sidebar-menu-item-icon"></i>
+                <span class="sidebar-dropdown-menu-text">วางแผนจำหน่าย </span>
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+              </a>
+              <ul class="sidebar-dropdown-menu" style="display: none">
+                <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="planning" data-child-page-id="planning_1">
+                  <a href="#">ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม.</a>
+                </li>
+                <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="planning" data-child-page-id="planning_2">
+                  <a href="#">เยี่ยมบ้าน,ส่งต่อเครือข่าย</a>
+                </li>
+              </ul>
+            </li>
+            <!-- การดูแลหลังเสียชีวิต   -->
+            <li class="sidebar-menu-item has-dropdown mb-2">
+              <a href="#">
+                <i class="bi bi-search-heart sidebar-menu-item-icon"></i>
+                <span class="sidebar-dropdown-menu-text">การดูแลหลังเสียชีวิต</span>
+                <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+              </a>
+              <ul class="sidebar-dropdown-menu" style="display: none">
+                <li class="sidebar-dropdown-menu-item list-menu-page" data-main-page-id="bereavementCare" data-child-page-id="bereavementCare_1">
+                  <a href="#">ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ</a>
+                </li>
+              </ul>
+            </li>
+          </section>
           <!-- จัดการระบบ (Admin) -->
           <li id="adminMenu" class="sidebar-menu-item has-dropdown mb-2 admin-only">
             <a href="#">
@@ -208,33 +224,10 @@
           </nav>
         </div>
 
-        <div class="container-sm">
+        <div class="container-xxl">
           <!-- หน้าแรก,ตาราง -->
-          <div id="homepage" class="main-page">
-            <div class="card shadow-sm mb-4 mt-5">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h4 class="mb-1">
-                      <i class="bi bi-clock-history me-2"></i>
-                      ตรวจสอบสถานะการเบิกพัสดุ
-                    </h4>
-                    <p class="text-muted mb-0">ติดตามสถานะการเบิกพัสดุของคุณ</p>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary" onclick="exportData()">
-                      <i class="bi bi-download me-2"></i>
-                      ดาวน์โหลด
-                    </button>
-                    <button class="btn btn-primary" onclick="loadRequestStatuses()">
-                      <i class="bi bi-arrow-clockwise me-2"></i>
-                      รีเฟรช
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div id="homepage" class="main-page mt-5">
+            <!-- สรุปข้อมูล -->
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-4 mb-4">
               <div class="col d-flex">
                 <div class="card status-card bg-total text-white flex-fill">
@@ -244,7 +237,7 @@
                         <i class="bi bi-boxes fs-3"></i>
                       </div>
                       <div class="ms-3">
-                        <div class="status-label">รายการทั้งหมด</div>
+                        <div class="status-label">จำนวนคนใข้ทั้งหมด</div>
                         <div class="status-value" id="totalRequests">0</div>
                       </div>
                     </div>
@@ -276,7 +269,7 @@
                         <i class="bi bi-check2-circle fs-3"></i>
                       </div>
                       <div class="ms-3">
-                        <div class="status-label">อนุมัติแล้ว</div>
+                        <div class="status-label">สำเร็จ</div>
                         <div class="status-value" id="approvedRequests">0</div>
                       </div>
                     </div>
@@ -301,20 +294,26 @@
               </div>
             </div>
 
+            <!-- กรองข้อมูล -->
             <div class="card shadow-sm mb-4">
               <div class="card-body">
                 <div class="row g-3">
-                  <div class="col-md-4">
+                  <div class="col-sm-12">
+                    <h4 class="card-title text-center fw-bold mb-3 mt-3">รายการข้อมูลทั้งหมด</h4>
+                  </div>
+
+                  <!-- กรองข้อมูลทั้งตาราง -->
+                  <div class="col-md-8">
                     <div class="input-group">
                       <span class="input-group-text bg-light border-end-0">
                         <i class="bi bi-search"></i>
                       </span>
-                      <input type="text" class="form-control border-start-0" id="searchRequest" placeholder="ค้นหารายการ, รหัสเบิก, ผู้เบิก..." />
+                      <input type="search" class="form-control border-start-0" id="searchDataTable" placeholder="ค้นหารายการ..." />
                     </div>
                   </div>
-
-                  <div class="col-md-4">
-                    <select class="form-select" id="filterStatus">
+                  <!-- กรองข้อมูลคลอลั่ม สถานะ -->
+                  <div class="col-md-4" id="filter_col3" data-column="3">
+                    <select class="column_filter_same form-select" id="col3_filter">
                       <option value="">สถานะทั้งหมด</option>
                       <option value="รอดำเนินการ">รอดำเนินการ</option>
                       <option value="อนุมัติแล้ว">อนุมัติแล้ว</option>
@@ -323,605 +322,638 @@
                     </select>
                   </div>
 
-                  <div class="col-md-4">
-                    <select class="form-select" id="sortBy">
-                      <option value="date">เรียงตามวันที่ล่าสุด</option>
-                      <option value="status">เรียงตามสถานะ</option>
-                      <option value="code">เรียงตามรหัสเบิก</option>
-                    </select>
+                  <div class="col-sm-6">
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-calendar-range"></i>
+                      </span>
+                      <input type="datetime-local" class="form-control border-start-0" id="startDate" placeholder="วันที่เริ่มต้น..." />
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-calendar-range"></i>
+                      </span>
+                      <input type="datetime-local" class="form-control border-start-0" id="endDate" placeholder="วันที่สิ้นสุด..." />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="card shadow-sm">
-              <div class="card-body px-0">
-                <div class="table-responsive">
-                  <table class="table table-hover mb-0">
-                    <thead>
-                      <tr>
-                        <th class="text-center" style="width: 60px">#</th>
-                        <th style="min-width: 160px">รหัสเบิก</th>
-                        <th>รายการ</th>
-                        <th class="text-center" style="width: 120px">จำนวน</th>
-                        <th class="text-center" style="width: 140px">สถานะ</th>
-                        <th style="min-width: 200px">หมายเหตุ</th>
-                        <th class="text-center" style="width: 120px">จัดการ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <td colspan="7" class="text-center py-5">
-                        <div class="d-flex flex-column align-items-center">
-                          <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
-                          <h5 class="text-muted mb-1">ไม่พบรายการเบิก</h5>
-                          <p class="text-muted small mb-0">ไม่มีรายการเบิกที่ตรงกับเงื่อนไขการค้นหา</p>
+            <!-- ตารางข้อมูล -->
+            <div class="table-responsive">
+              <table id="main_user_data_table" class="table-responsive nowrap" style="width: 100%">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>วันที่เข้ารับบริการ</th>
+                    <th>การดำเนินการ</th>
+                    <th>ชื่อ-สกุล</th>
+                    <th>เลขบัตรประชาชน</th>
+                    <th>เพศ</th>
+                    <th>อายุ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <img class="profile-table" src="https://lh5.googleusercontent.com/d/1wnYXEcQNqUTJ15WL9Hck79IIf48QNU5k" alt />
+                    </td>
+                    <td>20/01/2024, 20:16</td>
+                    <td>ปฏิเสธ</td>
+                    <td>นาย ประยุทธ์ จันโทรลา</td>
+                    <td>1450587369915</td>
+                    <td>ชาย</td>
+                    <td>64 ปี</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <img class="profile-table" src="https://lh5.googleusercontent.com/d/14JrOi6I2qanUTFn4Q_ftHDDkrGGSw8iV" alt />
+                    </td>
+                    <td>19/01/2024, 17:10</td>
+                    <td>รอดำเนินการ</td>
+                    <td>นาย ทักษิน อินนะวัตร</td>
+                    <td>7369915145058</td>
+                    <td>ชาย</td>
+                    <td>83 ปี</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <img class="profile-table" src="https://lh5.googleusercontent.com/d/16fpYWqjNrk2cg0EW3LlSO6HZh673-4ht" alt />
+                    </td>
+                    <td>20/01/2024, 21:16</td>
+                    <td>อนุมัติแล้ว</td>
+                    <td>นาย ประวิตร จันโทรลา</td>
+                    <td>7369915145058</td>
+                    <td>ชาย</td>
+                    <td>71 ปี</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <section class="section-user-data" style="display: none">
+            <!-- ข้อมูลผู้ป่วย -->
+            <div id="patientInformation" class="main-page mt-5">
+              <!-- ปุ่มเมนูข้อมูลผู้ป่วย -->
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
+                <div class="col d-flex">
+                  <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="patientInformation_1">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1_4bqt5irDAlX6ZBK2lETH_JbqHfDvqvg" alt="consult" />
                         </div>
-                      </td>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div class="card-footer bg-white border-top">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div id="pageInfo" class="text-muted small"></div>
-                    <nav id="pagination" aria-label="Page navigation"></nav>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ข้อมูลผู้ป่วย -->
-          <div id="patientInformation" class="main-page">
-            <!-- ปุ่มเมนูข้อมูลผู้ป่วย -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3 mt-5">
-              <div class="col d-flex">
-                <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="patientInformation_1">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1_4bqt5irDAlX6ZBK2lETH_JbqHfDvqvg" alt="consult" />
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">ข้อมูลทั่วไปของผู้ป่วย</div>
+                        <div class="ms-3">
+                          <div class="status-label">ข้อมูลทั่วไปของผู้ป่วย</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="col d-flex">
-                <div class="card status-card bg-pending text-white btn-menu-child-page flex-fill" data-child-page-id="patientInformation_2">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1bJahWI91zSmTwTc4M7NW6kQ71BM-HWMw" alt="consult" />
+                <div class="col d-flex">
+                  <div class="card status-card bg-pending text-white btn-menu-child-page flex-fill" data-child-page-id="patientInformation_2">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1bJahWI91zSmTwTc4M7NW6kQ71BM-HWMw" alt="consult" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">Consult for</div>
+                        </div>
                       </div>
-                      <div class="ms-3">
-                        <div class="status-label">Consult for</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col d-flex">
+                  <div class="card status-card bg-approved text-white btn-menu-child-page flex-fill" data-child-page-id="patientInformation_3">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1B49xnjh4CsYad7rDuQiIGm9kcw_Ame3S" alt="health-report" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">ข้อมูลสภาวะสุขภาพ</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="col d-flex">
-                <div class="card status-card bg-approved text-white btn-menu-child-page flex-fill" data-child-page-id="patientInformation_3">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1B49xnjh4CsYad7rDuQiIGm9kcw_Ame3S" alt="health-report" />
+              <!-- ข้อมูลทั่วไปของผู้ป่วย -->
+              <div id="patientInformation_1" class="child-page active px-3 my-3">
+                <button
+                  id="edit_patientInformation1"
+                  type="button"
+                  class="btn-edit"
+                  data-bs-toggle="modal"
+                  data-bs-target="#generalInformation_modal"
+                >
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="profile-main pt-5">
+                  <img id="patientImages" src="https://lh5.googleusercontent.com/d/1VZQfP1X7rawlEsI5BdrC9uHekPhHAkvx" alt="profile" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">ข้อมูลทั่วไปของผู้ป่วย</h4>
+                    <ul>
+                      <li>
+                        วันที่เข้ารับบริการ:
+                        <span id="serviceDate">20/01/2024, 20:16:54</span>
+                      </li>
+                      <li>Hn: <span id="hn">BBB</span></li>
+                      <li>ชื่อ-สกุล: <span id="fullName">ตูมตาม สุกฤษฎิ์</span></li>
+                      <li>
+                        เลขบัตรประชาชน:
+                        <span id="nationalID">1544789635887</span>
+                      </li>
+                      <li>วันเกิด: <span id="birthday">18/06/1870</span></li>
+                      <li>อายุ: <span id="age">75</span></li>
+                      <li>ศาสนา: <span id="religion">พุทธ</span></li>
+                      <li>เพศ: <span id="gender">ชาย</span></li>
+                      <li>น้ำหนัก: <span id="weight">65</span></li>
+                      <li>ส่วนสูง: <span id="height">168</span></li>
+                      <li>
+                        สิทธิ์การรักษา:
+                        <span id="rightToTreatment">ประกันสังคม</span>
+                      </li>
+                      <li>เบอร์โทรติดต่อ: <span id="tel">0997548116</span></li>
+                      <li>
+                        ที่อยู่:
+                        <span id="address">111/11 ตำบลบางพลีใหญ่ อำเภอบางพลี จังหวัดสมุทรปราการ 10540</span>
+                      </li>
+                      <li>
+                        วันที่ admit:
+                        <span id="startAdmitDate">15/06/2024</span> ถึง
+                        <span id="finishAdmitDate">31/10/2024</span>
+                      </li>
+                      <li>
+                        ความคิดเห็นของแพทย์:
+                        <span id="doctorOpinion">XXXXX</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <section class="photo-gallery mb-5 mx-3">
+                  <div class="container">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 gx-5 gy-4">
+                      <div class="col photo-history photo-preview">
+                        <img
+                          id="patientPicture1"
+                          src="https://lh5.googleusercontent.com/d/16jxzdJ7eT0hbOZ2KG3s6-AgaFfpK0lFT"
+                          alt="Lorem ipsum dolor sit amet"
+                        />
                       </div>
-                      <div class="ms-3">
-                        <div class="status-label">ข้อมูลสภาวะสุขภาพ</div>
+                      <div class="col photo-history photo-preview">
+                        <img
+                          id="patientPicture2"
+                          src="https://lh5.googleusercontent.com/d/1QeA1R8azZkNlCiHY1AHPXjUtI9rCXPG2"
+                          alt="Ipsum lorem dolor sit amet"
+                        />
+                      </div>
+                      <div class="col photo-history photo-preview">
+                        <img
+                          id="patientPicture3"
+                          src="https://lh5.googleusercontent.com/d/1Gi9HPonxFh-6n782ngJ4A4o-0bhLO7hJ"
+                          alt="Dolor lorem ipsum sit amet"
+                        />
+                      </div>
+                      <div class="col photo-history photo-preview">
+                        <img
+                          id="patientPicture4"
+                          src="https://lh5.googleusercontent.com/d/1Gi9HPonxFh-6n782ngJ4A4o-0bhLO7hJ"
+                          alt="Sit amet lorem ipsum dolor"
+                        />
                       </div>
                     </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- Consult for -->
+              <div id="patientInformation_2" class="child-page px-3 my-3">
+                <button id="edit_patientInformation2" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#consultFor_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1bJahWI91zSmTwTc4M7NW6kQ71BM-HWMw" alt="consult" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">Consult for</h4>
+                    <ul>
+                      <li>
+                        Advance care plant:
+                        <span id="advanceCarePlant">A</span>
+                      </li>
+                      <li>
+                        Best suportive care:
+                        <span id="bestSuportiveCare">B</span>
+                      </li>
+                      <li>
+                        End of life care:
+                        <span id="endOfLifeCareIPD_EOL">EOL care at home(home visit)</span>
+                      </li>
+                      <li>
+                        Skill training for home care at EOL:
+                        <span id="skillTrainingForHomeCareAtEOL">D</span>
+                      </li>
+                      <li>
+                        Socioeconomic &amp; spiritual problem:
+                        <span id="socioeconomicAndSpiritualProblem"></span>
+                      </li>
+                      <li>
+                        Medical equipment lending:
+                        <span id="medicalEquipmentLending"></span>
+                      </li>
+                      <li>
+                        หน่วยที่ส่งปรึกษา (หอผู้ป่วย, OPD):
+                        <span id="consultationUnit"></span>
+                      </li>
+                      <li>
+                        แพทย์ที่ส่งปรึกษา:
+                        <span id="referringPhysician"></span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ข้อมูลสภาวะสุขภาพ -->
+              <div id="patientInformation_3" class="child-page px-3 my-3">
+                <button id="edit_patientInformation3" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#healthInformation_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1B49xnjh4CsYad7rDuQiIGm9kcw_Ame3S" alt="health-report" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">ข้อมูลสภาวะสุขภาพ</h4>
+                    <ul>
+                      <li>Diagnosis: <span id="diagnosis"></span></li>
+                      <li>
+                        ผู้ป่วย Palliative care แยกตามโรค:
+                        <span id="patientsByDisease"></span>
+                      </li>
+                      <li>
+                        Chief compaint:
+                        <span id="chiefCompaint"></span>
+                      </li>
+                      <li>
+                        Status/Underlying disease:
+                        <span id="statusUnderlyingDisease"></span>
+                      </li>
+                      <li>PPS: <span id="pps"></span></li>
+                      <li>
+                        Biological problem:
+                        <span id="biologicalProblem"></span>
+                      </li>
+                      <li>
+                        Psychosocial:
+                        <span id="psychosocial"></span>
+                      </li>
+                      <li>Spiritual: <span id="spiritual"></span></li>
+                      <li>
+                        แบบประเมิน PPS:
+                        <span id="ppsAssessment"></span>
+                      </li>
+                      <li>
+                        แบบประเมินอาการรบกวน ESAS:
+                        <span id="esasAssessment"></span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- ข้อมูลทั่วไปของผู้ป่วย -->
-            <div id="patientInformation_1" class="child-page active px-3 my-3">
-              <button id="edit_patientInformation1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#generalInformation_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="profile-main pt-5">
-                <img id="patientImages" src="https://lh5.googleusercontent.com/d/1VZQfP1X7rawlEsI5BdrC9uHekPhHAkvx" alt="profile" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">ข้อมูลทั่วไปของผู้ป่วย</h4>
-                  <ul>
-                    <li>
-                      วันที่เข้ารับบริการ:
-                      <span id="serviceDate">20/01/2024, 20:16:54</span>
-                    </li>
-                    <li>Hn: <span id="hn">BBB</span></li>
-                    <li>ชื่อ-สกุล: <span id="fullName">ตูมตาม สุกฤษฎิ์</span></li>
-                    <li>
-                      เลขบัตรประชาชน:
-                      <span id="nationalID">1544789635887</span>
-                    </li>
-                    <li>วันเกิด: <span id="birthday">18/06/1870</span></li>
-                    <li>อายุ: <span id="age">75</span></li>
-                    <li>ศาสนา: <span id="religion">พุทธ</span></li>
-                    <li>เพศ: <span id="gender">ชาย</span></li>
-                    <li>น้ำหนัก: <span id="weight">65</span></li>
-                    <li>ส่วนสูง: <span id="height">168</span></li>
-                    <li>
-                      สิทธิ์การรักษา:
-                      <span id="rightToTreatment">ประกันสังคม</span>
-                    </li>
-                    <li>เบอร์โทรติดต่อ: <span id="tel">0997548116</span></li>
-                    <li>
-                      ที่อยู่:
-                      <span id="address">111/11 ตำบลบางพลีใหญ่ อำเภอบางพลี จังหวัดสมุทรปราการ 10540</span>
-                    </li>
-                    <li>
-                      วันที่ admit:
-                      <span id="startAdmitDate">15/06/2024</span> ถึง
-                      <span id="finishAdmitDate">31/10/2024</span>
-                    </li>
-                    <li>
-                      ความคิดเห็นของแพทย์:
-                      <span id="doctorOpinion">XXXXX</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <section class="photo-gallery mb-5 mx-3">
-                <div class="container">
-                  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 gx-5 gy-4">
-                    <div class="col photo-history photo-preview">
-                      <img
-                        id="patientPicture1"
-                        src="https://lh5.googleusercontent.com/d/16jxzdJ7eT0hbOZ2KG3s6-AgaFfpK0lFT"
-                        alt="Lorem ipsum dolor sit amet"
-                      />
-                    </div>
-                    <div class="col photo-history photo-preview">
-                      <img
-                        id="patientPicture2"
-                        src="https://lh5.googleusercontent.com/d/1QeA1R8azZkNlCiHY1AHPXjUtI9rCXPG2"
-                        alt="Ipsum lorem dolor sit amet"
-                      />
-                    </div>
-                    <div class="col photo-history photo-preview">
-                      <img
-                        id="patientPicture3"
-                        src="https://lh5.googleusercontent.com/d/1Gi9HPonxFh-6n782ngJ4A4o-0bhLO7hJ"
-                        alt="Dolor lorem ipsum sit amet"
-                      />
-                    </div>
-                    <div class="col photo-history photo-preview">
-                      <img
-                        id="patientPicture4"
-                        src="https://lh5.googleusercontent.com/d/1Gi9HPonxFh-6n782ngJ4A4o-0bhLO7hJ"
-                        alt="Sit amet lorem ipsum dolor"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </div>
-
-            <!-- Consult for -->
-            <div id="patientInformation_2" class="child-page px-3 my-3">
-              <button id="edit_patientInformation2" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#consultFor_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1bJahWI91zSmTwTc4M7NW6kQ71BM-HWMw" alt="consult" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">Consult for</h4>
-                  <ul>
-                    <li>
-                      Advance care plant:
-                      <span id="advanceCarePlant">A</span>
-                    </li>
-                    <li>
-                      Best suportive care:
-                      <span id="bestSuportiveCare">B</span>
-                    </li>
-                    <li>
-                      End of life care:
-                      <span id="endOfLifeCareIPD_EOL">EOL care at home(home visit)</span>
-                    </li>
-                    <li>
-                      Skill training for home care at EOL:
-                      <span id="skillTrainingForHomeCareAtEOL">D</span>
-                    </li>
-                    <li>
-                      Socioeconomic &amp; spiritual problem:
-                      <span id="socioeconomicAndSpiritualProblem"></span>
-                    </li>
-                    <li>
-                      Medical equipment lending:
-                      <span id="medicalEquipmentLending"></span>
-                    </li>
-                    <li>
-                      หน่วยที่ส่งปรึกษา (หอผู้ป่วย, OPD):
-                      <span id="consultationUnit"></span>
-                    </li>
-                    <li>
-                      แพทย์ที่ส่งปรึกษา:
-                      <span id="referringPhysician"></span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- ข้อมูลสภาวะสุขภาพ -->
-            <div id="patientInformation_3" class="child-page px-3 my-3">
-              <button id="edit_patientInformation3" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#healthInformation_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1B49xnjh4CsYad7rDuQiIGm9kcw_Ame3S" alt="health-report" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">ข้อมูลสภาวะสุขภาพ</h4>
-                  <ul>
-                    <li>Diagnosis: <span id="diagnosis"></span></li>
-                    <li>
-                      ผู้ป่วย Palliative care แยกตามโรค:
-                      <span id="patientsByDisease"></span>
-                    </li>
-                    <li>
-                      Chief compaint:
-                      <span id="chiefCompaint"></span>
-                    </li>
-                    <li>
-                      Status/Underlying disease:
-                      <span id="statusUnderlyingDisease"></span>
-                    </li>
-                    <li>PPS: <span id="pps"></span></li>
-                    <li>
-                      Biological problem:
-                      <span id="biologicalProblem"></span>
-                    </li>
-                    <li>
-                      Psychosocial:
-                      <span id="psychosocial"></span>
-                    </li>
-                    <li>Spiritual: <span id="spiritual"></span></li>
-                    <li>
-                      แบบประเมิน PPS:
-                      <span id="ppsAssessment"></span>
-                    </li>
-                    <li>
-                      แบบประเมินอาการรบกวน ESAS:
-                      <span id="esasAssessment"></span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- การดูแลรักษา -->
-          <div id="treatment" class="main-page">
-            <!-- ปุ่มเมนูการดูแลรักษา -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3 mt-5">
-              <div class="col d-flex">
-                <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="treatment_1">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1R-_lfnIviohWmYXWK9l3i8K0I-S0oLol" alt="consult" />
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">Family meeting, Advance care plan</div>
+            <!-- การดูแลรักษา -->
+            <div id="treatment" class="main-page mt-5">
+              <!-- ปุ่มเมนูการดูแลรักษา -->
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
+                <div class="col d-flex">
+                  <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="treatment_1">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1R-_lfnIviohWmYXWK9l3i8K0I-S0oLol" alt="consult" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">Family meeting, Advance care plan</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="col d-flex">
-                <div class="card status-card bg-pending text-white btn-menu-child-page flex-fill" data-child-page-id="treatment_2">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/17d-ZvzrG2wzbriB2e7yx7TKt3NXzEw4n" alt="consult" />
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">Treatment</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col d-flex">
-                <div class="card status-card bg-approved text-white btn-menu-child-page flex-fill" data-child-page-id="treatment_3">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1JL0sk1J0s5sUpp3VYDfYNAMrTT9yCtq5" alt="health-report" />
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">Education&training programs</div>
+                <div class="col d-flex">
+                  <div class="card status-card bg-pending text-white btn-menu-child-page flex-fill" data-child-page-id="treatment_2">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/17d-ZvzrG2wzbriB2e7yx7TKt3NXzEw4n" alt="consult" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">Treatment</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <!-- Family meeting, Advance care plan -->
-            <div id="treatment_1" class="child-page px-3 my-3">
-              <button id="treatment_edit1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#familyMeeting_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1R-_lfnIviohWmYXWK9l3i8K0I-S0oLol" alt="family-meeting" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">Family meeting, Advance care plan</h4>
-                  <ul>
-                    <li>
-                      วันที่ Family meeting:
-                      <span id="meetingDate"></span>
-                    </li>
-                    <li>
-                      การรับรู้การดำเนินการของโรค:
-                      <span id="recognitionDisease"></span>
-                    </li>
-                    <li>
-                      Living will documentation:
-                      <span id="livingWillDocumentation"></span>
-                    </li>
-                    <li>
-                      Resuscitaion plan: noETT:
-                      <span id="resuscitaionPlanNoETT"></span>
-                    </li>
-                    <li>
-                      Place of death:
-                      <span id="placeOfDeath"></span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- Treatment -->
-            <div id="treatment_2" class="child-page px-3 my-3">
-              <button id="treatment_edit2" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#treatment_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/17d-ZvzrG2wzbriB2e7yx7TKt3NXzEw4n" alt="treatment" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">Treatment</h4>
-                  <ul>
-                    <li>PC note: <span id="pcNote"></span></li>
-                    <li>
-                      ยาที่ใช้:
-                      <span id="medicationsUsed"></span>
-                    </li>
-                    <li>
-                      ปัญหาที่ต้องการแก้ไขเร่งด่วน:
-                      <span id="issuesSolvedUrgently"></span>
-                    </li>
-                    <li>
-                      แผนการดูแล/กิจกรรการดูแล:
-                      <span id="carePlanCareRoutine"></span>
-                    </li>
-                    <li>
-                      ผลลัพธ์/ข้อเสนอแนะ:
-                      <span id="resultsSuggestions"></span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- Education&training programs -->
-            <div id="treatment_3" class="child-page px-3 my-3">
-              <button id="treatment_edit3" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#educationTraining_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1JL0sk1J0s5sUpp3VYDfYNAMrTT9yCtq5" alt="Education-training" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">Education&amp;training programs</h4>
-                  <ul>
-                    <li>Training: <span id="trainning">ญาติ</span></li>
-                    <li>
-                      End of life care:
-                      <span id="endOfLifeCare"></span>
-                    </li>
-                    <li>
-                      อาการที่พบได้เมื่อใกล้เสียชีวิต:
-                      <span id="symptomsNearDeath"></span>
-                    </li>
-                    <li>
-                      การผ่อนคลายร่างกายและจิตใจ:
-                      <span id="relaxation"></span>
-                    </li>
-                    <li>
-                      การพลิกตะแคงตัวจัดท่า:
-                      <span id="sideFlip"></span>
-                    </li>
-                    <li>
-                      การดูแลทางเดินหายใจ:
-                      <span id="respiratoryCare"></span>
-                    </li>
-                    <li>
-                      การดูแลผู้ป่วย On NG-tube:
-                      <span id="onNgTube"></span>
-                    </li>
-                    <li>
-                      การดูแลผู้ป่วย Retrained foley's cath:
-                      <span id="retrainedFoleyCath"></span>
-                    </li>
-                    <li>Wond care: <span id="wondCare"></span></li>
-                    <li>
-                      Colostomy care:
-                      <span id="colostomyCare"></span>
-                    </li>
-                    <li>อื่นๆ: <span id="other"></span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- วางแผนจำหน่าย  -->
-          <div id="planning" class="main-page">
-            <!-- ปุ่มเมนูวางแผนจำหน่าย -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3 mt-5">
-              <div class="col d-flex">
-                <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="planning_1">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1WG05teMtGeslui4cdnhuBFHdy5FchTVH" alt="consult" />
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม.</div>
+                <div class="col d-flex">
+                  <div class="card status-card bg-approved text-white btn-menu-child-page flex-fill" data-child-page-id="treatment_3">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1JL0sk1J0s5sUpp3VYDfYNAMrTT9yCtq5" alt="health-report" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">Education&training programs</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="col d-flex">
-                <div class="card status-card bg-pending text-white btn-menu-child-page flex-fill" data-child-page-id="planning_2">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1-PI4l76uMEAGuRWjMnISGT2K37FI8IBT" alt="consult" />
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">เยี่ยมบ้าน,ส่งต่อเครือข่าย</div>
-                      </div>
-                    </div>
+              <!-- Family meeting, Advance care plan -->
+              <div id="treatment_1" class="child-page px-3 my-3">
+                <button id="treatment_edit1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#familyMeeting_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1R-_lfnIviohWmYXWK9l3i8K0I-S0oLol" alt="family-meeting" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">Family meeting, Advance care plan</h4>
+                    <ul>
+                      <li>
+                        วันที่ Family meeting:
+                        <span id="meetingDate"></span>
+                      </li>
+                      <li>
+                        การรับรู้การดำเนินการของโรค:
+                        <span id="recognitionDisease"></span>
+                      </li>
+                      <li>
+                        Living will documentation:
+                        <span id="livingWillDocumentation"></span>
+                      </li>
+                      <li>
+                        Resuscitaion plan: noETT:
+                        <span id="resuscitaionPlanNoETT"></span>
+                      </li>
+                      <li>
+                        Place of death:
+                        <span id="placeOfDeath"></span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Treatment -->
+              <div id="treatment_2" class="child-page px-3 my-3">
+                <button id="treatment_edit2" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#treatment_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/17d-ZvzrG2wzbriB2e7yx7TKt3NXzEw4n" alt="treatment" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">Treatment</h4>
+                    <ul>
+                      <li>PC note: <span id="pcNote"></span></li>
+                      <li>
+                        ยาที่ใช้:
+                        <span id="medicationsUsed"></span>
+                      </li>
+                      <li>
+                        ปัญหาที่ต้องการแก้ไขเร่งด่วน:
+                        <span id="issuesSolvedUrgently"></span>
+                      </li>
+                      <li>
+                        แผนการดูแล/กิจกรรการดูแล:
+                        <span id="carePlanCareRoutine"></span>
+                      </li>
+                      <li>
+                        ผลลัพธ์/ข้อเสนอแนะ:
+                        <span id="resultsSuggestions"></span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Education&training programs -->
+              <div id="treatment_3" class="child-page px-3 my-3">
+                <button id="treatment_edit3" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#educationTraining_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1JL0sk1J0s5sUpp3VYDfYNAMrTT9yCtq5" alt="Education-training" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">Education&amp;training programs</h4>
+                    <ul>
+                      <li>Training: <span id="trainning">ญาติ</span></li>
+                      <li>
+                        End of life care:
+                        <span id="endOfLifeCare"></span>
+                      </li>
+                      <li>
+                        อาการที่พบได้เมื่อใกล้เสียชีวิต:
+                        <span id="symptomsNearDeath"></span>
+                      </li>
+                      <li>
+                        การผ่อนคลายร่างกายและจิตใจ:
+                        <span id="relaxation"></span>
+                      </li>
+                      <li>
+                        การพลิกตะแคงตัวจัดท่า:
+                        <span id="sideFlip"></span>
+                      </li>
+                      <li>
+                        การดูแลทางเดินหายใจ:
+                        <span id="respiratoryCare"></span>
+                      </li>
+                      <li>
+                        การดูแลผู้ป่วย On NG-tube:
+                        <span id="onNgTube"></span>
+                      </li>
+                      <li>
+                        การดูแลผู้ป่วย Retrained foley's cath:
+                        <span id="retrainedFoleyCath"></span>
+                      </li>
+                      <li>Wond care: <span id="wondCare"></span></li>
+                      <li>
+                        Colostomy care:
+                        <span id="colostomyCare"></span>
+                      </li>
+                      <li>อื่นๆ: <span id="other"></span></li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม. -->
-            <div id="planning_1" class="child-page px-3 my-3">
-              <button id="planning_edit1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#followUp_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1WG05teMtGeslui4cdnhuBFHdy5FchTVH" alt="consultation" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม.</h4>
-                  <ul>
-                    <li>
-                      วันที่ติดตาม ให้คำปรึกษา/เวลา:
-                      <span id="followUp_followUpDate">17/07/2024, 14:49</span>
-                    </li>
-                    <li>
-                      PPS 50-100%:
-                      <span id="followUp_pps50_100">5</span>
-                    </li>
-                    <li>PPS 30-40%: <span id="followUp_pps30_40">6</span></li>
-                    <li>PPS 10-20%: <span id="followUp_pps10_20">7</span></li>
-                    <li>PPS %: <span id="followUp_ppsPercent">8</span></li>
-                    <li>ปัญหา: <span id="followUp_issue">G</span></li>
-                    <li>การแก้ไข: <span id="followUp_resolve">I</span></li>
-                    <li>กิจกรรการดูแล: <span id="followUp_caring">no Central line</span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- เยี่ยมบ้าน,ส่งต่อเครือข่าย -->
-            <div id="planning_2" class="child-page px-3 my-3">
-              <button id="planning_edit2" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#homeVisit_modal">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1-PI4l76uMEAGuRWjMnISGT2K37FI8IBT" alt="home-visits" />
-              </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">เยี่ยมบ้าน,ส่งต่อเครือข่าย</h4>
-                  <ul>
-                    <li>วันที่เยี่ยมบ้าน/เวลา:<span id="homeVisit_homeVisitDate">10/02/2025, 12:26</span></li>
-                    <li>
-                      เยี่ยมบ้านครั้งที่:
-                      <span id="homeVisit_homeVisitNo">1</span>
-                    </li>
-                    <li>PPS %: <span id="homeVisit_ppsPercent">30</span></li>
-                    <li>ปัญหา: <span id="homeVisit_issue">หอยเหนื่ิอย</span></li>
-                    <li>การแก้ไข: <span id="homeVisit_resolve"></span></li>
-                    <li>กิจกรรการดูแล: <span id="homeVisit_caring">no Central line</span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- การดูแลหลังเสียชีวิต  -->
-          <div id="bereavementCare" class="main-page">
-            <!-- ปุ่มเมนูวางแผนจำหน่าย -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3 mt-5">
-              <div class="col d-flex">
-                <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="bereavementCare_1">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <img src="https://lh5.googleusercontent.com/d/1jqnqB7oj9Lks6MtytU9SfMhAGV8yCZtD" alt="consult" />
+            <!-- วางแผนจำหน่าย  -->
+            <div id="planning" class="main-page mt-5">
+              <!-- ปุ่มเมนูวางแผนจำหน่าย -->
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
+                <div class="col d-flex">
+                  <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="planning_1">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1WG05teMtGeslui4cdnhuBFHdy5FchTVH" alt="consult" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม.</div>
+                        </div>
                       </div>
-                      <div class="ms-3">
-                        <div class="status-label">ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col d-flex">
+                  <div class="card status-card bg-pending text-white btn-menu-child-page flex-fill" data-child-page-id="planning_2">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1-PI4l76uMEAGuRWjMnISGT2K37FI8IBT" alt="consult" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">เยี่ยมบ้าน,ส่งต่อเครือข่าย</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <!-- ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ -->
-            <div id="bereavementCare_1" class="child-page px-3 my-3">
-              <button id="BereavementCare_edit1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
-              </button>
-              <div class="child-page-icon pt-5">
-                <img src="https://lh5.googleusercontent.com/d/1jqnqB7oj9Lks6MtytU9SfMhAGV8yCZtD" alt="assessment" />
+
+              <!-- ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม. -->
+              <div id="planning_1" class="child-page px-3 my-3">
+                <button id="planning_edit1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#followUp_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1WG05teMtGeslui4cdnhuBFHdy5FchTVH" alt="consultation" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">ติดตามประเมินอาการ, ให้คำปรึกษาตลอด 24 ชม.</h4>
+                    <ul>
+                      <li>
+                        วันที่ติดตาม ให้คำปรึกษา/เวลา:
+                        <span id="followUp_followUpDate">17/07/2024, 14:49</span>
+                      </li>
+                      <li>
+                        PPS 50-100%:
+                        <span id="followUp_pps50_100">5</span>
+                      </li>
+                      <li>PPS 30-40%: <span id="followUp_pps30_40">6</span></li>
+                      <li>PPS 10-20%: <span id="followUp_pps10_20">7</span></li>
+                      <li>PPS %: <span id="followUp_ppsPercent">8</span></li>
+                      <li>ปัญหา: <span id="followUp_issue">G</span></li>
+                      <li>การแก้ไข: <span id="followUp_resolve">I</span></li>
+                      <li>กิจกรรการดูแล: <span id="followUp_caring">no Central line</span></li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-              <div class="detail">
-                <div>
-                  <h4 class="text-center mb-4">ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ</h4>
-                  <ul>
-                    <li>Advance care plant: 20/01/2024, 20:16:54</li>
-                    <li>Best suportive care:</li>
-                    <li>
-                      End of life care
-                      <ol type="1">
-                        <li>IPD EOL care at primary</li>
-                        <li>EOL care at home (home visit)</li>
-                      </ol>
-                    </li>
-                    <li>Skill training for home care at EOL</li>
-                    <li>Socioeconomic &amp; spiritual problem</li>
-                    <li>Medical equipment lending</li>
-                    <li>หน่วยที่ส่งปรึกษา (หอผู้ป่วย, OPD)</li>
-                    <li>แพทย์ที่ส่งปรึกษา</li>
-                  </ul>
+
+              <!-- เยี่ยมบ้าน,ส่งต่อเครือข่าย -->
+              <div id="planning_2" class="child-page px-3 my-3">
+                <button id="planning_edit2" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#homeVisit_modal">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1-PI4l76uMEAGuRWjMnISGT2K37FI8IBT" alt="home-visits" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">เยี่ยมบ้าน,ส่งต่อเครือข่าย</h4>
+                    <ul>
+                      <li>วันที่เยี่ยมบ้าน/เวลา:<span id="homeVisit_homeVisitDate">10/02/2025, 12:26</span></li>
+                      <li>
+                        เยี่ยมบ้านครั้งที่:
+                        <span id="homeVisit_homeVisitNo">1</span>
+                      </li>
+                      <li>PPS %: <span id="homeVisit_ppsPercent">30</span></li>
+                      <li>ปัญหา: <span id="homeVisit_issue">หอยเหนื่ิอย</span></li>
+                      <li>การแก้ไข: <span id="homeVisit_resolve"></span></li>
+                      <li>กิจกรรการดูแล: <span id="homeVisit_caring">no Central line</span></li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <!-- การดูแลหลังเสียชีวิต  -->
+            <div id="bereavementCare" class="main-page mt-5">
+              <!-- ปุ่มเมนูวางแผนจำหน่าย -->
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
+                <div class="col d-flex">
+                  <div class="card status-card bg-total text-white btn-menu-child-page flex-fill" data-child-page-id="bereavementCare_1">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex align-items-center">
+                        <div class="status-icon">
+                          <img src="https://lh5.googleusercontent.com/d/1jqnqB7oj9Lks6MtytU9SfMhAGV8yCZtD" alt="consult" />
+                        </div>
+                        <div class="ms-3">
+                          <div class="status-label">ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ -->
+              <div id="bereavementCare_1" class="child-page px-3 my-3">
+                <button id="BereavementCare_edit1" type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                  <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <div class="child-page-icon pt-5">
+                  <img src="https://lh5.googleusercontent.com/d/1jqnqB7oj9Lks6MtytU9SfMhAGV8yCZtD" alt="assessment" />
+                </div>
+                <div class="detail">
+                  <div>
+                    <h4 class="text-center mb-4">ประเมิน 2Q,9Q,8Q,BGQ good death,ความพึงพอใจ</h4>
+                    <ul>
+                      <li>Advance care plant: 20/01/2024, 20:16:54</li>
+                      <li>Best suportive care:</li>
+                      <li>
+                        End of life care
+                        <ol type="1">
+                          <li>IPD EOL care at primary</li>
+                          <li>EOL care at home (home visit)</li>
+                        </ol>
+                      </li>
+                      <li>Skill training for home care at EOL</li>
+                      <li>Socioeconomic &amp; spiritual problem</li>
+                      <li>Medical equipment lending</li>
+                      <li>หน่วยที่ส่งปรึกษา (หอผู้ป่วย, OPD)</li>
+                      <li>แพทย์ที่ส่งปรึกษา</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
     </div>
@@ -929,8 +961,8 @@
     <!-- หน้าย่อย -->
     <script>
       const btnPageChild = $('.btn-menu-child-page,  .list-menu-page');
-      var currentMainPage = 'patientInformation';
-      var currentChildPage = 'patientInformation_1';
+      var currentMainPage = 'homepage';
+      var currentChildPage = null;
 
       $(document).ready(function () {
         $(`#${currentMainPage}`).fadeIn(500, function () {
@@ -958,11 +990,10 @@
       });
     </script>
 
-    <!-- Scripts -->
+    <!-- แถบนำทาง -->
     <script>
       $(document).ready(function () {
         initializeSidebar();
-        updateRequestsTable([]);
       });
 
       function initializeSidebar() {
@@ -994,164 +1025,266 @@
       }
     </script>
 
-    <!-- แก้ไขฟังก์ชัน updateRequestsTable เพื่อเพิ่มปุ่มดูรายละเอียด -->
+    <!-- ตั้งค่าตาราง -->
     <script>
-      // Global variables
-      let requestStatuses = [];
-      let currentPage = 1;
-      const itemsPerPage = 10;
-      let isLoading = false;
+      const _emptyTable = `<div class="d-flex flex-column align-items-center">
+                  <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+                  <h5 class="text-muted mb-1">ไม่พบข้อมูล</h5>
+                  <p class="text-muted small mb-0">ยังไม่มีข้อมูลผู้ใช้งาน</p>
+                </div>`;
 
-      function updateRequestsTable(items = requestStatuses) {
-        const tbody = $('#requestTableBody');
-        tbody.empty();
+      const _sZeroRecords = `<div class="d-flex flex-column align-items-center">
+        <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+        <h5 class="text-muted mb-1">ไม่พบข้อมูล</h5>
+        <p class="text-muted small mb-0">ข้อมูลค้นหาไม่ตรงกับฐานข้อมูล</p>
+      </div>`;
 
-        if (!Array.isArray(items) || items.length === 0) {
-          tbody.html(`
+      const settings = {
+        // กำหนดเมนูแสดงจำนวนแถว
+        lengthMenu: [
+          [5, 10, 15, 20, 50, 100, -1],
+          [5, 10, 15, 20, 50, 100, 'ทั้งหมด'],
+        ],
+
+        order: [[1, 'desc']],
+        ordering: true,
+        iDisplayLength: 20,
+        responsive: true,
+        scrollX: true,
+
+        columnDefs: [{ orderable: false, targets: 0 }],
+        autoWidth: true, // ✅ เปิดให้ปรับขนาดอัตโนมัติ
+
+        //เมนูภาษาไทย
+        language: {
+          sProcessing: 'กำลังดำเนินการ...',
+          sLengthMenu: 'แสดง _MENU_ รายการ',
+          sZeroRecords: _sZeroRecords,
+          sInfo: 'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ',
+          sInfoEmpty: 'แสดง 0 ถึง 0 จาก 0 รายการ',
+          sInfoFiltered: '(กรองข้อมูลจาก _MAX_ รายการ)',
+          sInfoPostFix: '',
+          sSearch: 'ค้นหา:',
+          sUrl: '',
+          emptyTable: _emptyTable,
+
+          // oPaginate: {
+          //   sFirst: "หน้าแรก",
+          //   sPrevious: "ก่อนหน้า",
+          //   sNext: "ถัดไป",
+          //   sLast: "หน้าสุดท้าย",
+          // },
+        },
+      };
+    </script>
+
+    <!-- ตารางข้อมูล -->
+    <script>
+      // <!-- ปฏิทิน -->
+      const monthNames = [
+        'มกราคม',
+        'กุมภาพันธ์',
+        'มีนาคม',
+        'เมษายน',
+        'พฤษภาคม',
+        'มิถุนายน',
+        'กรกฎาคม',
+        'สิงหาคม',
+        'กันยายน',
+        'ตุลาคม',
+        'พฤศจิกายน',
+        'ธันวาคม',
+      ];
+
+      const dayNames = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+
+      var table = null;
+      var count = 0;
+
+      // เพิ่มข้อมูลใหม่
+      const img = '<img class="profile-table" src="https://lh5.googleusercontent.com/d/14JrOi6I2qanUTFn4Q_ftHDDkrGGSw8iV" alt />';
+      const newData = [img, 'user_name', 'รอดำเนินการ', 'user_', 'user_w', 'หญิง', `${20 + count} ปี`];
+
+      $(document).ready(function () {
+        table = new Table('#main_user_data_table', { ...settings });
+
+        // setInterval(function () {
+        //   table.addRow(newData);
+        // }, 500);
+      });
+
+      class Table {
+        constructor(tableId, settings, data = []) {
+          this.tableId = tableId;
+          this.settings = settings;
+          this.table = new DataTable(tableId, { ...settings });
+          this.data = data;
+
+          if (!data.length == 0) {
+            $(`${tableId} tbody`).html(`
             <tr>
               <td colspan="7" class="text-center py-5">
                 <div class="d-flex flex-column align-items-center">
                   <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
-                  <h5 class="text-muted mb-1">ไม่พบรายการเบิก</h5>
-                  <p class="text-muted small mb-0">ไม่มีรายการเบิกที่ตรงกับเงื่อนไขการค้นหา</p>
+                  <h5 class="text-muted mb-1">ไม่พบข้อมูล</h5>
+                  <p class="text-muted small mb-0">ยังไม่มีข้อมูลผู้ใช้งาน</p>
                 </div>
               </td>
-            </tr>
-          `);
-          updatePagination(0);
-          return;
+            </tr>`);
+          }
         }
 
-        // Calculate pagination
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedItems = items.slice(startIndex, endIndex);
+        getTable() {
+          return this.table;
+        }
+        // ดึงข้อมูลแถว
+        getRowData(row) {
+          return this.table.row(row).data();
+        }
+        // เพิ่มแถวข้อมูล
+        addRow(data) {
+          this.data.push(data);
+          let row = this.table.row.add(data).draw().node(); // ดึง `node()` ของแถวที่เพิ่ม
 
-        // Render items
-        paginatedItems.forEach((item, index) => {
-          const statusBadge = getStatusBadge(item.status);
-          const row = `
-            <tr>
-              <td class="text-center">${startIndex + index + 1}</td>
-              <td>
-                <div class="d-flex flex-column">
-                  <span class="fw-medium">${escapeHtml(item.requestCode)}</span>
-                  <small class="text-muted">${formatDate(item.requestDate)}</small>
-                </div>
-              </td>
-              <td>${escapeHtml(item.item)}</td>
-              <td class="text-center">
-                <span class="badge bg-light text-dark">
-                  ${item.amount} ${escapeHtml(item.unit)}
-                </span>
-              </td>
-              <td class="text-center">
-                <span class="badge ${statusBadge}">
-                  ${escapeHtml(item.status || 'ไม่ระบุ')}
-                </span>
-              </td>
-              <td>${escapeHtml(item.note || '-')}</td>
-              <td class="text-center">
-                <button
-                  class="btn btn-outline-primary btn-sm"
-                  onclick="showRequestDetails('${item.requestCode}')"
-                >
-                  <i class="bi bi-search me-1"></i>
-                  รายละเอียด
-                </button>
-              </td>
-            </tr>
-          `;
-          tbody.append(row);
-        });
-
-        updatePagination(items.length);
-        updateSummaryCards();
+          // เพิ่มคลาสให้แถวใหม่มีเอฟเฟกต์
+          $(row).css('opacity', 0).animate({ opacity: 1 }, 500); // เอฟเฟกต์ fade-in
+        }
+        // แก้ไขแถวข้อมูล
+        updateRow(rowIndex, data) {
+          this.data[rowIndex] = data;
+          this.table.row(rowIndex).data(data).draw();
+        }
+        // ลบแถวข้อมูล
+        deleteRow(rowIndex) {
+          this.data.splice(rowIndex, 1);
+          this.table.row(rowIndex).remove().draw();
+        }
+        // จำนวนแถว
+        getLength() {
+          return this.table.rows().count();
+        }
+        // ค้นหาข้อมูล
+        search(searchQuery) {
+          this.table.search(searchQuery).draw();
+        }
+        //  เรียงข้อมูลตามคลอลั่ม
+        sortColumn(columnIndex, order) {
+          this.table.order([columnIndex, order]).draw();
+        }
+        // ดาวโหลด Excel
+        exportToExcel() {
+          const blob = new Blob([this.table.table().html()], { type: 'text/html' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'report.xlsx';
+          a.click();
+          URL.revokeObjectURL(url);
+          a.remove();
+        }
+        // ดาวโหลด CSV
+        exportToCSV() {
+          const csv = this.table
+            .table()
+            .rows()
+            .data()
+            .map((row) => row.map((cell) => escapeHtml(cell)).join(','))
+            .join('\n');
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'report.csv';
+          a.click();
+          URL.revokeObjectURL(url);
+          a.remove();
+        }
+        // ล้างข้อมูลตาราง
+        clearTable() {
+          this.data = [];
+          this.table.clear().draw();
+        }
       }
 
-      // Update pagination
-      function updatePagination(totalItems) {
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const pagination = $('#pagination');
-        pagination.empty();
+      function getStatusBadgeClass(status) {
+        return (
+          {
+            Pending: 'bg-warning',
+            Approved: 'bg-success',
+            Rejected: 'bg-danger',
+            Inactive: 'bg-secondary',
+          }[status] || 'bg-secondary'
+        );
+      }
 
-        if (totalPages <= 1) {
-          $('#pageInfo').html('');
-          return;
-        }
+      function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
 
-        let paginationHtml = `
-    <ul class="pagination justify-content-end mb-0">
-      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-        <button class="page-link" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-          <i class="bi bi-chevron-left"></i>
-        </button>
-      </li>
-  `;
+        return date.toLocaleString('th-TH', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
 
-        let startPage = Math.max(1, currentPage - 2);
-        let endPage = Math.min(totalPages, startPage + 4);
-        if (endPage - startPage < 4) {
-          startPage = Math.max(1, endPage - 4);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-          paginationHtml += `
-      <li class="page-item ${currentPage === i ? 'active' : ''}">
-        <button class="page-link" onclick="changePage(${i})">${i}</button>
-      </li>
-    `;
-        }
-
-        paginationHtml += `
-    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-      <button class="page-link" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-        <i class="bi bi-chevron-right"></i>
-      </button>
-    </li>
-  </ul>`;
-
-        pagination.html(paginationHtml);
-
-        // Update page info
-        const startItem = (currentPage - 1) * itemsPerPage + 1;
-        const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-
-        $('#pageInfo').html(`
-    <div class="text-muted small">
-      แสดง ${startItem}-${endItem} จาก ${totalItems} รายการ
-    </div>
-  `);
+      function escapeHtml(unsafe) {
+        return unsafe
+          ? String(unsafe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+          : '';
       }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        //  filter by column
+        $('input.column_filter').on('keyup click', function () {
+          filterColumn($(this).parents('tr').attr('data-column'));
+        });
+
+        $('select.column_filter').on('change', function () {
+          filterColumn($(this).parents('tr').attr('data-column'));
+        });
+
+        $('#searchDataTable').on('keyup click', function () {
+          const val = $('#searchDataTable').val();
+          table.search(val);
+        });
+
+        $('select.column_filter_same').on('change', function () {
+          filterColumnSame($(this).parents('div').attr('data-column'));
+        });
+
+        $('.ui-menu').on('click', (event) => {
+          const val = event.target.innerHTML;
+          table.getTable().DataTable().column(1).search(val).draw();
+        });
+
+        // filter by column
+        function filterColumn(column) {
+          const val = $('#col' + column + '_filter').val();
+          table.getTable().column(column).search(val).draw();
+        }
+
+        //  Filter by column **เฉพาะคำที่ตรงกันจริงๆ**
+        function filterColumnSame(column) {
+          const val = $('#col' + column + '_filter').val();
+          table
+            .getTable()
+            .column(column - 1)
+            .search(val ? '^' + val + '$' : '', true, false)
+            .draw();
+        }
+      });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
   </body>
 </html>
