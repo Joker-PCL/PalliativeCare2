@@ -13,7 +13,11 @@
   text-align: center !important;
 }
 
-table {
+.mc-date-picker {
+  cursor: pointer;
+}
+
+table.dataTable {
   & > thead > tr {
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
@@ -21,15 +25,24 @@ table {
 
     & > th {
       font-size: 16px;
-      padding-top: 15px !important;
+      /* padding-top: 15px !important; */
       text-align: left !important;
-      padding-bottom: 15px !important;
-      background-color: #2ca4bf;
+      /* padding-bottom: 15px !important; */
+      /* background-color: #2ca4bf; */
       border: none !important;
-      color: #fff;
+      /* color: #fff; */
+
+      &:nth-child(3) {
+        text-align: center !important;
+        max-width: 180px !important;
+      }
 
       &:focus-visible {
         outline: 2px solid #2ca4bf;
+      }
+
+      &:hover {
+        outline: none !important;
       }
     }
 
@@ -59,11 +72,58 @@ table {
     &:hover {
       background-color: rgba(69, 70, 71, 0.35) !important;
       color: #ffffff !important;
+      font-weight: bold;
     }
 
     & > td {
       font-size: 15px;
       text-align: left !important;
+
+      &:nth-child(3) {
+        display: flex;
+        text-align: center !important;
+        max-width: 160px !important;
+
+        & > span.approve {
+          color: #ffffff;
+          padding: 8px 15px;
+          border-radius: 1rem;
+          width: 100%;
+          margin-top: 5px;
+          &.approve-approved {
+            background-color: #28a745;
+            &::before {
+              content: '\e53e';
+              font-family: 'FontAwesome';
+              padding-right: 5px;
+            }
+          }
+          &.approve-pending {
+            background-color: #3896ee;
+            &::before {
+              content: '\f252';
+              font-family: 'FontAwesome';
+              padding-right: 5px;
+            }
+          }
+          &.approve-refuse {
+            background-color: #d40303;
+            &::before {
+              content: '\f506';
+              font-family: 'FontAwesome';
+              padding-right: 5px;
+            }
+          }
+          &.approve-cancel {
+            background-color: #ff4800;
+            &::before {
+              content: '\f05e';
+              font-family: 'FontAwesome';
+              padding-right: 5px;
+            }
+          }
+        }
+      }
 
       &:first-child > img {
         width: 50px;

@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
 
+    <!-- MCDatepicker -->
+    <link href="https://cdn.jsdelivr.net/npm/mc-datepicker/dist/mc-calendar.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/mc-datepicker/dist/mc-calendar.min.js"></script>
+
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
@@ -224,6 +228,7 @@
           </nav>
         </div>
 
+        <!-- หน้าหลัก, หน้าย่อย -->
         <div class="container-xxl">
           <!-- หน้าแรก,ตาราง -->
           <div id="homepage" class="main-page mt-5">
@@ -237,24 +242,8 @@
                         <i class="bi bi-boxes fs-3"></i>
                       </div>
                       <div class="ms-3">
-                        <div class="status-label">จำนวนคนใข้ทั้งหมด</div>
+                        <div class="status-label">คนใข้ทั้งหมด</div>
                         <div class="status-value" id="totalRequests">0</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col d-flex">
-                <div class="card status-card bg-pending text-white flex-fill">
-                  <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center">
-                      <div class="status-icon">
-                        <i class="bi bi-clock fs-3"></i>
-                      </div>
-                      <div class="ms-3">
-                        <div class="status-label">รอดำเนินการ</div>
-                        <div class="status-value" id="pendingRequests">0</div>
                       </div>
                     </div>
                   </div>
@@ -266,11 +255,27 @@
                   <div class="card-body d-flex flex-column">
                     <div class="d-flex align-items-center">
                       <div class="status-icon">
-                        <i class="bi bi-check2-circle fs-3"></i>
+                        <i class="bi bi-clock fs-3"></i>
                       </div>
                       <div class="ms-3">
-                        <div class="status-label">สำเร็จ</div>
+                        <div class="status-label">รอดำเนินการ</div>
                         <div class="status-value" id="approvedRequests">0</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col d-flex">
+                <div class="card status-card bg-pending text-white flex-fill">
+                  <div class="card-body d-flex flex-column">
+                    <div class="d-flex align-items-center">
+                      <div class="status-icon">
+                        <i class="bi bi-ban fs-3"></i>
+                      </div>
+                      <div class="ms-3">
+                        <div class="status-label">ปฏิเสธ</div>
+                        <div class="status-value" id="pendingRequests">0</div>
                       </div>
                     </div>
                   </div>
@@ -285,7 +290,7 @@
                         <i class="bi bi-flag-fill fs-3"></i>
                       </div>
                       <div class="ms-3">
-                        <div class="status-label">เสร็จสิ้น</div>
+                        <div class="status-label">สำเร็จ</div>
                         <div class="status-value" id="completedRequests">0</div>
                       </div>
                     </div>
@@ -296,19 +301,25 @@
 
             <!-- กรองข้อมูล -->
             <div class="card shadow-sm mb-4">
+              <div class="bg-header text-white rounded-sm col-sm-12 px-4 mb-2 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold mb-0">รายการข้อมูลทั้งหมด</h5>
+                <div class="d-flex gap-3">
+                  <button class="btn btn-cancel" id="reset_filter"><i class="bi bi-arrow-clockwise pe-1"></i>รีเซ็ต</button>
+                  <button class="btn btn-add" id="add_patient_data" data-bs-toggle="modal" data-bs-target="#register_patient_form_modal">
+                    <i class="bi bi-plus-circle pe-1"></i>เพิ่มข้อมูล
+                  </button>
+                </div>
+              </div>
+
               <div class="card-body">
                 <div class="row g-3">
-                  <div class="col-sm-12">
-                    <h4 class="card-title text-center fw-bold mb-3 mt-3">รายการข้อมูลทั้งหมด</h4>
-                  </div>
-
                   <!-- กรองข้อมูลทั้งตาราง -->
                   <div class="col-md-8">
                     <div class="input-group">
                       <span class="input-group-text bg-light border-end-0">
                         <i class="bi bi-search"></i>
                       </span>
-                      <input type="search" class="form-control border-start-0" id="searchDataTable" placeholder="ค้นหารายการ..." />
+                      <input type="search" class="table_filter form-control" id="searchDataTable" placeholder="ค้นหารายการ..." />
                     </div>
                   </div>
                   <!-- กรองข้อมูลคลอลั่ม สถานะ -->
@@ -316,18 +327,19 @@
                     <select class="column_filter_same form-select" id="col3_filter">
                       <option value="">สถานะทั้งหมด</option>
                       <option value="รอดำเนินการ">รอดำเนินการ</option>
-                      <option value="อนุมัติแล้ว">อนุมัติแล้ว</option>
+                      <option value="อนุมัติ">อนุมัติ</option>
                       <option value="ปฏิเสธ">ปฏิเสธ</option>
                       <option value="เสร็จสิ้น">เสร็จสิ้น</option>
                     </select>
                   </div>
 
+                  <!-- กรองข้อมูลคลอลั่ม วันที่เข้ารับบริการ -->
                   <div class="col-sm-6">
                     <div class="input-group">
                       <span class="input-group-text bg-light border-end-0">
                         <i class="bi bi-calendar-range"></i>
                       </span>
-                      <input type="datetime-local" class="form-control border-start-0" id="startDate" placeholder="วันที่เริ่มต้น..." />
+                      <input type="text" class="form-control mc-date-picker" id="service_start_date" placeholder="วันที่เริ่มต้น..." readonly />
                     </div>
                   </div>
                   <div class="col-sm-6">
@@ -335,67 +347,78 @@
                       <span class="input-group-text bg-light border-end-0">
                         <i class="bi bi-calendar-range"></i>
                       </span>
-                      <input type="datetime-local" class="form-control border-start-0" id="endDate" placeholder="วันที่สิ้นสุด..." />
+                      <input type="text" class="form-control mc-date-picker" id="until_the_date_of_service" placeholder="ถึงวันที่..." readonly />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- ตารางข้อมูล -->
-            <div class="table-responsive">
-              <table id="main_user_data_table" class="table-responsive nowrap" style="width: 100%">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>วันที่เข้ารับบริการ</th>
-                    <th>การดำเนินการ</th>
-                    <th>ชื่อ-สกุล</th>
-                    <th>เลขบัตรประชาชน</th>
-                    <th>เพศ</th>
-                    <th>อายุ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <img class="profile-table" src="https://lh5.googleusercontent.com/d/1wnYXEcQNqUTJ15WL9Hck79IIf48QNU5k" alt />
-                    </td>
-                    <td>20/01/2024, 20:16</td>
-                    <td>ปฏิเสธ</td>
-                    <td>นาย ประยุทธ์ จันโทรลา</td>
-                    <td>1450587369915</td>
-                    <td>ชาย</td>
-                    <td>64 ปี</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <img class="profile-table" src="https://lh5.googleusercontent.com/d/14JrOi6I2qanUTFn4Q_ftHDDkrGGSw8iV" alt />
-                    </td>
-                    <td>19/01/2024, 17:10</td>
-                    <td>รอดำเนินการ</td>
-                    <td>นาย ทักษิน อินนะวัตร</td>
-                    <td>7369915145058</td>
-                    <td>ชาย</td>
-                    <td>83 ปี</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <img class="profile-table" src="https://lh5.googleusercontent.com/d/16fpYWqjNrk2cg0EW3LlSO6HZh673-4ht" alt />
-                    </td>
-                    <td>20/01/2024, 21:16</td>
-                    <td>อนุมัติแล้ว</td>
-                    <td>นาย ประวิตร จันโทรลา</td>
-                    <td>7369915145058</td>
-                    <td>ชาย</td>
-                    <td>71 ปี</td>
-                  </tr>
-                </tbody>
-              </table>
+              <hr />
+              <!-- ตารางข้อมูล -->
+              <div class="data-table px-3">
+                <table id="main_user_data_table" class="table-responsive nowrap" style="width: 100%">
+                  <thead>
+                    <tr class="data-table-row">
+                      <th></th>
+                      <th>วันที่เข้ารับบริการ</th>
+                      <th>การดำเนินการ</th>
+                      <th>ชื่อ-สกุล</th>
+                      <th>เลขบัตรประชาชน</th>
+                      <th>เพศ</th>
+                      <th>อายุ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="data-table-row">
+                      <td>
+                        <img class="profile-table" src="https://lh5.googleusercontent.com/d/1wnYXEcQNqUTJ15WL9Hck79IIf48QNU5k" alt />
+                      </td>
+                      <td>20/02/2025, 20:16</td>
+                      <td><span class="approve approve-approved">อนุมัติ</span></td>
+                      <td>นาย ประยุทธ์ จันโทรลา</td>
+                      <td>1450587369915</td>
+                      <td>ชาย</td>
+                      <td>64 ปี</td>
+                    </tr>
+                    <tr class="data-table-row">
+                      <td>
+                        <img class="profile-table" src="https://lh5.googleusercontent.com/d/14JrOi6I2qanUTFn4Q_ftHDDkrGGSw8iV" alt />
+                      </td>
+                      <td>21/02/2025, 17:10</td>
+                      <td><span class="approve approve-pending">รอดำเนินการ</span></td>
+                      <td>นาย ทักษิน อินนะวัตร</td>
+                      <td>7369915145058</td>
+                      <td>ชาย</td>
+                      <td>83 ปี</td>
+                    </tr>
+                    <tr class="data-table-row">
+                      <td>
+                        <img class="profile-table" src="https://lh5.googleusercontent.com/d/16fpYWqjNrk2cg0EW3LlSO6HZh673-4ht" alt />
+                      </td>
+                      <td>22/02/2025, 21:16</td>
+                      <td><span class="approve approve-refuse">ปฏิเสธ</span></td>
+                      <td>นาย ประวิตร จันโทรลา</td>
+                      <td>7369915145058</td>
+                      <td>ชาย</td>
+                      <td>71 ปี</td>
+                    </tr>
+                    <tr class="data-table-row">
+                      <td>
+                        <img class="profile-table" src="https://lh5.googleusercontent.com/d/16fpYWqjNrk2cg0EW3LlSO6HZh673-4ht" alt />
+                      </td>
+                      <td>22/02/2025, 21:16</td>
+                      <td><span class="approve approve-cancel">ยกเลิก</span></td>
+                      <td>นาย ประวิตร จันโทรลา</td>
+                      <td>7369915145058</td>
+                      <td>ชาย</td>
+                      <td>71 ปี</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <section class="section-user-data" style="display: none">
+          <section id="patient_history" style="display: block">
             <!-- ข้อมูลผู้ป่วย -->
             <div id="patientInformation" class="main-page mt-5">
               <!-- ปุ่มเมนูข้อมูลผู้ป่วย -->
@@ -958,7 +981,36 @@
       </main>
     </div>
 
-    <!-- หน้าย่อย -->
+    <!-- Modal -->
+    <div class="modal fade" id="register_patient_form_modal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white py-3">
+            <h5 class="modal-title py-1" id="formModalLabel">ลงทะเบียน</h5>
+            <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="register_patient_form">
+              <div class="mb-3">
+                <label for="name" class="form-label">ชื่อ</label>
+                <input type="text" class="form-control" id="name" placeholder="กรอกชื่อของคุณ" />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">อีเมล</label>
+                <input type="email" class="form-control" id="email" placeholder="example@mail.com" />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">รหัสผ่าน</label>
+                <input type="password" class="form-control" id="password" placeholder="********" />
+              </div>
+              <button type="submit" class="btn btn-success w-100">สมัครสมาชิก</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- หน้าหลัก, หน้าย่อย -->
     <script>
       const btnPageChild = $('.btn-menu-child-page,  .list-menu-page');
       var currentMainPage = 'homepage';
@@ -975,6 +1027,7 @@
 
           if (mainPageId && mainPageId != currentMainPage) {
             currentMainPage = mainPageId;
+
             $('.main-page').hide();
             $(`#${currentMainPage}`).fadeIn(300, function () {
               currentChildPage = childPageId;
@@ -1080,23 +1133,11 @@
 
     <!-- ตารางข้อมูล -->
     <script>
-      // <!-- ปฏิทิน -->
-      const monthNames = [
-        'มกราคม',
-        'กุมภาพันธ์',
-        'มีนาคม',
-        'เมษายน',
-        'พฤษภาคม',
-        'มิถุนายน',
-        'กรกฎาคม',
-        'สิงหาคม',
-        'กันยายน',
-        'ตุลาคม',
-        'พฤศจิกายน',
-        'ธันวาคม',
-      ];
-
-      const dayNames = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+      function idCardFormatter(cardId) {
+        const id = `${cardId}`;
+        console.log(id.length());
+        return (formatted = `${id[0]} ${id.slice(1, 5)} ${id.slice(5, 10)} ${id.slice(10, 12)} ${id.slice(12)}`);
+      }
 
       var table = null;
       var count = 0;
@@ -1108,9 +1149,33 @@
       $(document).ready(function () {
         table = new Table('#main_user_data_table', { ...settings });
 
-        // setInterval(function () {
-        //   table.addRow(newData);
-        // }, 500);
+        // Event เมื่อเลือกรายการจากตาราง
+        table.getTable().on('click', 'tbody tr.data-table-row', function () {
+          // ดึงข้อมูลแถวที่เลือก
+          const data = table.getRowData(this);
+          console.log(data);
+          patientHistory();
+        });
+
+        function patientHistory() {
+          currentMainPage = 'patientInformation';
+          currentChildPage = 'patientInformation_1';
+          $('.main-page').hide();
+          $('.section-user-data').slideDown();
+
+          $(`#${currentMainPage}`).fadeIn(300, function () {
+            $('.child-page').hide();
+            $(`#${currentChildPage}`).fadeIn(500);
+          });
+        }
+
+        $('.list-menu-page[data-main-page-id="homepage"]').click(function () {
+          currentMainPage = 'homepage';
+          currentChildPage = '';
+          $('.main-page').hide();
+          $(`#${currentMainPage}`).fadeIn('fast');
+          $('.section-user-data').slideUp();
+        });
       });
 
       class Table {
@@ -1119,19 +1184,6 @@
           this.settings = settings;
           this.table = new DataTable(tableId, { ...settings });
           this.data = data;
-
-          if (!data.length == 0) {
-            $(`${tableId} tbody`).html(`
-            <tr>
-              <td colspan="7" class="text-center py-5">
-                <div class="d-flex flex-column align-items-center">
-                  <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
-                  <h5 class="text-muted mb-1">ไม่พบข้อมูล</h5>
-                  <p class="text-muted small mb-0">ยังไม่มีข้อมูลผู้ใช้งาน</p>
-                </div>
-              </td>
-            </tr>`);
-          }
         }
 
         getTable() {
@@ -1240,20 +1292,18 @@
 
     <script>
       $(document).ready(function () {
-        //  filter by column
-        $('input.column_filter').on('keyup click', function () {
-          filterColumn($(this).parents('tr').attr('data-column'));
-        });
-
-        $('select.column_filter').on('change', function () {
-          filterColumn($(this).parents('tr').attr('data-column'));
-        });
-
-        $('#searchDataTable').on('keyup click', function () {
-          const val = $('#searchDataTable').val();
+        //  กรองข้อมูลเฉพาะคลอลั่ม
+        $('input.table_filter').on('keyup click', function () {
+          const val = $(this).val();
           table.search(val);
         });
 
+        //  กรองข้อมูลเฉพาะคลอลั่ม
+        $('input.column_filter, select.column_filter').on('keyup click change', function () {
+          filterColumn($(this).parents('tr').attr('data-column'));
+        });
+
+        //  กรองข้อมูลเฉพาะคลอลั่ม **เฉพาะคำที่ตรงกันจริงๆ**
         $('select.column_filter_same').on('change', function () {
           filterColumnSame($(this).parents('div').attr('data-column'));
         });
@@ -1263,13 +1313,23 @@
           table.getTable().DataTable().column(1).search(val).draw();
         });
 
-        // filter by column
+        // รีเซ็ตการกรองข้อมูล
+        $('#reset_filter').on('click', (event) => {
+          $('input.table_filter').val('');
+          $('input.column_filter, select.column_filter, input.mc-date-picker').val('');
+          $('select.column_filter_same').val('');
+
+          table.getTable().search('');
+          table.getTable().columns('').search('').draw();
+        });
+
+        //  กรองข้อมูลเฉพาะคลอลั่ม
         function filterColumn(column) {
           const val = $('#col' + column + '_filter').val();
           table.getTable().column(column).search(val).draw();
         }
 
-        //  Filter by column **เฉพาะคำที่ตรงกันจริงๆ**
+        //  กรองข้อมูลเฉพาะคลอลั่ม **เฉพาะคำที่ตรงกันจริงๆ**
         function filterColumnSame(column) {
           const val = $('#col' + column + '_filter').val();
           table
@@ -1277,6 +1337,93 @@
             .column(column - 1)
             .search(val ? '^' + val + '$' : '', true, false)
             .draw();
+        }
+      });
+    </script>
+
+    <!-- MCDatepicker -->
+    <script>
+      $(document).ready(function () {
+        // ตั้งค่าปฏิทิน
+        const monthNames = [
+          'มกราคม',
+          'กุมภาพันธ์',
+          'มีนาคม',
+          'เมษายน',
+          'พฤษภาคม',
+          'มิถุนายน',
+          'กรกฎาคม',
+          'สิงหาคม',
+          'กันยายน',
+          'ตุลาคม',
+          'พฤศจิกายน',
+          'ธันวาคม',
+        ];
+        const dayNames = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+        const datepicker_settings = {
+          bodyType: 'modal',
+          selectedDate: new Date(),
+          dateFormat: 'dd/mm/yyyy',
+          customMonths: monthNames,
+          customWeekDays: dayNames,
+          closeOnBlur: true,
+          autoClose: true,
+          // minDate: new Date(dateFormat(<?= minDate ?>)),
+          // maxDate: new Date(dateFormat(<?= maxDate ?>)),
+        };
+
+        const filter_sDate_el = '#service_start_date';
+        const filter_eDate_el = '#until_the_date_of_service';
+
+        const sDatePicker = MCDatepicker.create({
+          el: filter_sDate_el,
+          ...datepicker_settings,
+        });
+
+        const eDatePicker = MCDatepicker.create({
+          el: filter_eDate_el,
+          ...datepicker_settings,
+        });
+
+        sDatePicker.onSelect((date, formatedDate) => {
+          table.getTable().draw();
+          const sDate = new Date(date);
+          const eDate = new Date(eDatePicker.pickedDate);
+          if (sDate > eDate && $(filter_eDate_el).val()) {
+            eDatePicker.setFullDate(sDate);
+          }
+
+          eDatePicker.prevLimitDate = date;
+          // console.log(eDatePicker)
+        });
+
+        eDatePicker.onSelect((date, formatedDate) => {
+          table.getTable().draw();
+        });
+
+        // Custom filtering function which will search data in column four between two values
+        DataTable.ext.search.push(function (settings, data, dataIndex) {
+          const sDate = dateFormat($(filter_sDate_el).val());
+          const eDate = dateFormat($(filter_eDate_el).val());
+          const col_filter = 1;
+
+          const date = dateFormat(data[col_filter]);
+          if (!sDate || !eDate) return true;
+
+          if (date >= sDate && date <= eDate) return true;
+
+          return false;
+        });
+
+        // convert dd/mm/yyyy to yyyy/mm/dd
+        function dateFormat(date) {
+          if (!date) return;
+          const _date = date.split(', ')[0];
+          const dd = _date.split('/')[0];
+          const mm = _date.split('/')[1];
+          const yyyy = _date.split('/')[2];
+          const iso_date = new Date([yyyy, mm, dd].join('-'));
+          return iso_date;
         }
       });
     </script>
