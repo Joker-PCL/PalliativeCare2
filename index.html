@@ -15,6 +15,9 @@
       rel="stylesheet"
     />
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
     <!-- Data tables -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
@@ -158,6 +161,7 @@
 
       <div class="sidebar-overlay"></div>
 
+      <!-- หน้าหลัก -->
       <main class="bg-light pb-5">
         <!-- Navbar -->
         <div class="px-3">
@@ -174,12 +178,7 @@
                 <i class="ri-menu-line sidebar-toggle me-3 d-block d-md-none text-white"></i>
               </button>
 
-              <a
-                class="navbar-brand mx-auto fs-3 fw-bold text-white"
-                href="https://script.google.com/macros/s/AKfycbwMK_f0UTvBFciKnCaETEdGSGBRNqpSVX1IeHR_ELx4/dev"
-              >
-                DASHBOARD
-              </a>
+              <a id="page_title" class="navbar-brand mx-auto fs-3 fw-bold text-white" href="#"> DASHBOARD </a>
 
               <!-- เมนูโปรไฟล์ -->
               <div class="d-flex align-items-center">
@@ -202,18 +201,12 @@
 
                   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                     <li>
-                      <a
-                        class="dropdown-item"
-                        href="https://script.google.com/macros/s/AKfycbwMK_f0UTvBFciKnCaETEdGSGBRNqpSVX1IeHR_ELx4/dev?page=profile"
+                      <a class="dropdown-item nav-menu-page" data-main-page-id="edit_profile" href="#"
                         ><i class="ri-user-settings-line me-2"></i>จัดการโปรไฟล์</a
                       >
                     </li>
                     <li>
-                      <a
-                        class="dropdown-item"
-                        href="https://script.google.com/macros/s/AKfycbwMK_f0UTvBFciKnCaETEdGSGBRNqpSVX1IeHR_ELx4/dev?page=report"
-                        ><i class="ri-file-list-3-line me-2"></i>จัดการข้อมูล</a
-                      >
+                      <a class="dropdown-item" href="#"><i class="ri-file-list-3-line me-2"></i>จัดการข้อมูล</a>
                     </li>
                     <li><hr class="dropdown-divider" /></li>
                     <li>
@@ -231,7 +224,7 @@
         <!-- หน้าหลัก, หน้าย่อย -->
         <div class="container-xxl">
           <!-- หน้าแรก,ตาราง -->
-          <div id="homepage" class="main-page mt-5">
+          <div id="homepage" class="main-page mt-5" data-page-name="DASHBOARD">
             <!-- สรุปข้อมูล -->
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-4 mb-4">
               <div class="col d-flex">
@@ -305,7 +298,7 @@
                 <h5 class="card-title fw-bold mb-0">รายการข้อมูลทั้งหมด</h5>
                 <div class="d-flex gap-3">
                   <button class="btn btn-cancel" id="reset_filter"><i class="bi bi-arrow-clockwise pe-1"></i>รีเซ็ต</button>
-                  <button class="btn btn-add" id="add_patient_data" data-bs-toggle="modal" data-bs-target="#register_patient_form_modal">
+                  <button class="btn btn-add" id="add_patient_data" data-bs-toggle="modal" data-bs-target="#generalInformation_modal">
                     <i class="bi bi-plus-circle pe-1"></i>เพิ่มข้อมูล
                   </button>
                 </div>
@@ -340,6 +333,7 @@
                         <i class="bi bi-calendar-range"></i>
                       </span>
                       <input type="text" class="form-control mc-date-picker" id="service_start_date" placeholder="วันที่เริ่มต้น..." readonly />
+                      <input type="time" class="form-control" id="service_start_time" />
                     </div>
                   </div>
                   <div class="col-sm-6">
@@ -348,6 +342,7 @@
                         <i class="bi bi-calendar-range"></i>
                       </span>
                       <input type="text" class="form-control mc-date-picker" id="until_the_date_of_service" placeholder="ถึงวันที่..." readonly />
+                      <input type="time" class="form-control" id="until_the_time_of_service" />
                     </div>
                   </div>
                 </div>
@@ -418,9 +413,10 @@
             </div>
           </div>
 
-          <section id="patient_history" style="display: block">
+          <!-- ข้อมูลผู้ป่วย -->
+          <section id="patient_history">
             <!-- ข้อมูลผู้ป่วย -->
-            <div id="patientInformation" class="main-page mt-5">
+            <div id="patientInformation" class="main-page mt-5" data-page-name="ข้อมูลผู้ป่วย">
               <!-- ปุ่มเมนูข้อมูลผู้ป่วย -->
               <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
                 <div class="col d-flex">
@@ -527,7 +523,7 @@
 
                 <section class="photo-gallery mb-5 mx-3">
                   <div class="container">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 gx-5 gy-4">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 gx-5 gy-4">
                       <div class="col photo-history photo-preview">
                         <img
                           id="patientPicture1"
@@ -660,7 +656,7 @@
             </div>
 
             <!-- การดูแลรักษา -->
-            <div id="treatment" class="main-page mt-5">
+            <div id="treatment" class="main-page mt-5" data-page-name="การดูแลรักษา">
               <!-- ปุ่มเมนูการดูแลรักษา -->
               <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
                 <div class="col d-flex">
@@ -834,7 +830,7 @@
             </div>
 
             <!-- วางแผนจำหน่าย  -->
-            <div id="planning" class="main-page mt-5">
+            <div id="planning" class="main-page mt-5" data-page-name="วางแผนจำหน่าย">
               <!-- ปุ่มเมนูวางแผนจำหน่าย -->
               <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
                 <div class="col d-flex">
@@ -927,7 +923,7 @@
             </div>
 
             <!-- การดูแลหลังเสียชีวิต  -->
-            <div id="bereavementCare" class="main-page mt-5">
+            <div id="bereavementCare" class="main-page mt-5" data-page-name="การดูแลหลังเสียชีวิต">
               <!-- ปุ่มเมนูวางแผนจำหน่าย -->
               <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-3">
                 <div class="col d-flex">
@@ -977,34 +973,1065 @@
               </div>
             </div>
           </section>
+
+          <!-- แก้ไขโปรไฟล์ -->
+          <div id="edit_profile" class="main-page container mt-5" data-page-name="แก้ไขโปรไฟล์">
+            <div class="row">
+              <div class="col-lg-4 mb-4">
+                <div class="card profile-card">
+                  <div class="card-body text-center">
+                    <div class="profile-image-container mb-4">
+                      <img
+                        class="profile-image rounded-circle img-thumbnail"
+                        src="https://lh5.googleusercontent.com/d/1uW-UA9ifCwi72w8K6sNFpkrONQUg8uqv"
+                        alt="Profile Image"
+                        style="width: 150px; height: 150px; object-fit: cover"
+                      />
+                      <label for="profileImageUpload" class="btn-upload">
+                        <i class="bi bi-camera-fill"></i>
+                      </label>
+                      <input type="file" id="profileImageUpload" accept="image/*" style="display: none" onchange="handleProfileImageUpload(event)" />
+                    </div>
+                    <h4 id="profileName" class="card-title mb-2">admin1234</h4>
+                    <p id="profileEmail" class="text-muted mb-2">admin@gmail.com</p>
+                    <p id="profileRole" class="badge bg-danger">Admin</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-8">
+                <!-- อีเมล์ -->
+                <div class="card profile-card mb-4">
+                  <div class="card-body">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
+                      <h5 class="card-title d-flex align-items-center mb-3 mb-sm-0">
+                        <i class="bi bi-envelope-fill me-2"></i>
+                        <span>ข้อมูลอีเมล</span>
+                      </h5>
+                    </div>
+
+                    <div class="email-info-container">
+                      <div class="p-3 bg-light rounded-3 mb-3">
+                        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
+                          <div class="email-label text-muted">
+                            <i class="bi bi-at me-2"></i>
+                            <span>อีเมลปัจจุบัน:</span>
+                          </div>
+                          <div class="email-value flex-grow-1">
+                            <span id="currentEmail" class="text-primary fw-bold word-break-all">admin@gmail.com</span>
+                          </div>
+                        </div>
+                      </div>
+                      <form id="emailForm">
+                        <div class="form-input mb-4">
+                          <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light text-primary border-0"><i class="fa-regular fa-envelope fs-4"></i></span>
+                            <input
+                              type="email"
+                              class="form-control bg-light border-0"
+                              id="newEmail"
+                              placeholder="email@example.com"
+                              autocomplete="off"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <button type="submit" class="button-36">บันทึกข้อมูล</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ชื่อ-สกุล -->
+                <div class="card profile-card mb-4">
+                  <div class="card-body">
+                    <h5 class="card-title d-flex align-items-center mb-4"><i class="bi bi-person-fill me-2 fs-4"></i>ข้อมูลส่วนตัว</h5>
+                    <form id="profileForm">
+                      <div class="form-input mb-4">
+                        <label for="fullName" class="form-label">
+                          ชื่อ-นามสกุล
+                          <span class="text-danger ps-2"></span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                          <span class="input-group-text bg-light text-primary border-0"><i class="bi bi-person-badge fs-4"></i></span>
+                          <input type="text" class="form-control bg-light border-0" id="fullName" placeholder="" autocomplete="off" required />
+                        </div>
+                      </div>
+                      <button type="submit" class="button-36">บันทึกข้อมูล</button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- รหัสผ่าน -->
+                <div class="card profile-card">
+                  <div class="card-body">
+                    <h5 class="card-title d-flex align-items-center mb-4"><i class="bi bi-shield-lock-fill me-2"></i>เปลี่ยนรหัสผ่าน</h5>
+                    <form id="changePasswordForm">
+                      <div class="mb-3">
+                        <label for="oldPassword" class="form-label">
+                          รหัสผ่าน
+                          <span class="text-danger ps-2">*</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                          <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line fs-4"></i></span>
+                          <input
+                            type="password"
+                            class="form-control bg-light border-0"
+                            id="oldPassword"
+                            placeholder="••••••••"
+                            autocomplete="off"
+                            required
+                          />
+                          <span class="input-group-text bg-light text-secondary border-0 toggle-password"><i class="fa fa-eye fs-5"></i></span>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="newPassword" class="form-label">
+                          รหัสผ่านไหม่
+                          <span class="text-danger ps-2">*</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                          <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line fs-4"></i></span>
+                          <input
+                            type="password"
+                            class="form-control bg-light border-0"
+                            id="newPassword"
+                            placeholder="••••••••"
+                            autocomplete="off"
+                            required
+                          />
+                          <span class="input-group-text bg-light text-secondary border-0 toggle-password"><i class="fa fa-eye fs-5"></i></span>
+                        </div>
+                        <div class="password-requirements text-muted small mt-1">
+                          <i class="ri-information-line"></i>
+                          รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร ประกอบด้วยตัวอักษรตัวเล็ก ตัวใหญ่ ตัวเลขและอักขระพิเศษ
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">
+                          ยืนยันรหัสผ่าน
+                          <span class="text-danger ps-2">*</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                          <span class="input-group-text bg-light text-primary border-0"><i class="ri-lock-line fs-4"></i></span>
+                          <input
+                            type="password"
+                            class="form-control bg-light border-0"
+                            id="confirmPassword"
+                            placeholder="••••••••"
+                            autocomplete="off"
+                            required
+                          />
+                          <span class="input-group-text bg-light text-secondary border-0 toggle-password"><i class="fa fa-eye fs-5"></i></span>
+                        </div>
+                      </div>
+
+                      <button type="submit" class="button-36">เปลี่ยนรหัสผ่าน</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="register_patient_form_modal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white py-3">
-            <h5 class="modal-title py-1" id="formModalLabel">ลงทะเบียน</h5>
-            <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- ฟอร์มข้อมูลผู้ป่วย id: f100 -->
+    <div>
+      <!-- Modal Form ข้อมูลทั่วไป id: f100 -->
+      <div
+        class="modal modal-lg fade"
+        id="generalInformation_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m100_GeneralInformationLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3 py-3">
+              <h5 class="modal-title" id="m100_GeneralInformationLabel"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f100_GeneralInformation" onsubmit="">
+                <div class="patientImages-upload">
+                  <input type="hidden" name="mode" />
+                  <input type="hidden" name="id" />
+                  <div class="patientImages-edit">
+                    <input type="file" id="f100_patientImagesUpload" name="patientImages" class="photo-upload" accept=".png, .jpg, .jpeg" />
+                    <label for="f100_patientImagesUpload"></label>
+                  </div>
+                  <div class="patientImages-preview">
+                    <div
+                      id="f100_patientImagesPreview"
+                      style="background-image: url(https://lh5.googleusercontent.com/d/1uW-UA9ifCwi72w8K6sNFpkrONQUg8uqv)"
+                    ></div>
+                  </div>
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col">
+                      <label for="f100_serviceDate" class="form-label">วันที่เข้ารับบริการ</label>
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="date-picker form-control"
+                          id="f100_serviceDate"
+                          name="serviceDate"
+                          placeholder="วันที่, เวลา"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="f100_hn" class="form-label">Hn</label>
+                      <input type="text" class="form-control" id="f100_hn" name="hn" placeholder="........................" required />
+                    </div>
+                    <div class="col">
+                      <label for="f100_fullname" class="form-label">ชื่อ-สกุล</label>
+                      <input type="text" class="form-control" id="f100_fullname" name="fullName" placeholder="ชื่อ.... นามสกุล...." required />
+                    </div>
+                    <div class="col">
+                      <label for="f100_nationalID" class="form-label">เลขบัตรประชาชน</label>
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="f100_nationalID"
+                        name="nationalID"
+                        pattern="[0-9]{13}"
+                        placeholder="เลขบัตรประชาชน 13 หลัก"
+                        required
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f100_birthday" class="form-label">วันเกิด</label>
+                      <div class="input-group">
+                        <input type="text" class="date-picker form-control" id="f100_birthday" name="birthday" placeholder="วว/ดด/ปปปป" readonly />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="f100_age" class="form-label">อายุ</label>
+                      <input type="tel" class="form-control" id="f100_age" name="age" placeholder="XXX ปี" required />
+                    </div>
+                    <div class="col">
+                      <label for="f100_religion" class="form-label">ศาสนา</label>
+                      <input type="text" class="form-control" id="f100_religion" name="religion" placeholder="........................" />
+                    </div>
+                    <div class="col">
+                      <label for="f100_gender" class="form-label">เพศ</label>
+                      <input type="text" class="form-control" id="f100_gender" name="gender" placeholder="........................" />
+                    </div>
+                    <div class="col">
+                      <label for="f100_weight" class="form-label">น้ำหนัก</label>
+                      <input type="tel" class="form-control" id="f100_weight" name="weight" placeholder="XXX กิโลกรัม" />
+                    </div>
+                    <div class="col">
+                      <label for="f100_height" class="form-label">ส่วนสูง</label>
+                      <input type="tel" class="form-control" id="f100_height" name="height" placeholder="XXX เซ็นติเมตร" />
+                    </div>
+                    <div class="col">
+                      <label for="f100_rightToTreatment" class="form-label">สิทธิ์การรักษา</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f100_rightToTreatment"
+                        name="rightToTreatment"
+                        placeholder="........................"
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f100_tel" class="form-label">เบอร์โทรติดต่อ</label>
+                      <input type="tel" class="form-control" id="f100_tel" name="tel" pattern="[0-9]{10}" placeholder="099XXXXXXX" />
+                    </div>
+                    <div class="col-lg-12">
+                      <label for="f100_address" class="form-label">ที่อยู่</label>
+                      <textarea
+                        type="text"
+                        class="form-control"
+                        id="f100_address"
+                        name="address"
+                        rows="4"
+                        placeholder="บ้านเลขที่, ซอย, ถนน, ตำบล, อำเภอ, จังหวัด"
+                      ></textarea>
+                    </div>
+                    <div class="col">
+                      <label for="f100_startAdmitDate" class="form-label">วันที่ admit</label>
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="date-picker form-control"
+                          id="f100_startAdmitDate"
+                          name="startAdmitDate"
+                          placeholder="วว/ดด/ปปปป"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="f100_finishAdmitDate" class="form-label">ถึงวันที่</label>
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="date-picker form-control"
+                          id="f100_finishAdmitDate"
+                          name="finishAdmitDate"
+                          placeholder="วว/ดด/ปปปป"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <label for="f100_doctorOpinion" class="form-label">ความคิดเห็นของแพทย์</label>
+                      <textarea
+                        type="text"
+                        class="form-control"
+                        id="f100_doctorOpinion"
+                        name="doctorOpinion"
+                        rows="4"
+                        placeholder="........................"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <!-- ภาพผู้ป่วย -->
+                  <section class="photo-gallery mb-5 mx-3">
+                    <div class="container">
+                      <div class="row row-cols-1 row-cols-lg-2 g-5">
+                        <div class="col photo-history">
+                          <img id="f100_patientPicPreview1" src="https://picsum.photos/id/251/480/320.webp" alt="patientPicture1" />
+                          <div class="photo-edit">
+                            <input type="file" id="f100_patientPicUpload1" name="patientPicture1" class="photo-upload" accept=".png, .jpg, .jpeg" />
+                            <label for="f100_patientPicUpload1"></label>
+                            <input type="button" id="f100_patientPicDelete1" class="photo-delete" />
+                            <label for="f100_patientPicDelete1"></label>
+                          </div>
+                        </div>
+                        <div class="col photo-history">
+                          <img id="f100_patientPicPreview2" src="https://picsum.photos/id/251/480/320.webp" alt="patientPicture2" />
+                          <div class="photo-edit">
+                            <input type="file" id="f100_patientPicUpload2" name="patientPicture2" class="photo-upload" accept=".png, .jpg, .jpeg" />
+                            <label for="f100_patientPicUpload2"></label>
+                            <input type="button" id="f100_patientPicDelete2" class="photo-delete" />
+                            <label for="f100_patientPicDelete2"></label>
+                          </div>
+                        </div>
+                        <div class="col photo-history">
+                          <img id="f100_patientPicPreview3" src="https://picsum.photos/id/251/480/320.webp" alt="patientPicture3" />
+                          <div class="photo-edit">
+                            <input type="file" id="f100_patientPicUpload3" name="patientPicture3" class="photo-upload" accept=".png, .jpg, .jpeg" />
+                            <label for="f100_patientPicUpload3"></label>
+                            <input type="button" id="f100_patientPicDelete3" class="photo-delete" />
+                            <label for="f100_patientPicDelete3"></label>
+                          </div>
+                        </div>
+                        <div class="col photo-history">
+                          <img id="f100_patientPicPreview4" src="https://picsum.photos/id/251/480/320.webp" alt="patientPicture4" />
+                          <div class="photo-edit">
+                            <input type="file" id="f100_patientPicUpload4" name="patientPicture4" class="photo-upload" accept=".png, .jpg, .jpeg" />
+                            <label for="f100_patientPicUpload4"></label>
+                            <input type="button" id="f100_patientPicDelete4" class="photo-delete" />
+                            <label for="f100_patientPicDelete4"></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
-          <div class="modal-body">
-            <form id="register_patient_form">
-              <div class="mb-3">
-                <label for="name" class="form-label">ชื่อ</label>
-                <input type="text" class="form-control" id="name" placeholder="กรอกชื่อของคุณ" />
+        </div>
+      </div>
+
+      <!-- Modal Form Consult for id: f101 -->
+      <div
+        class="modal modal-lg fade"
+        id="consultFor_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m101_consultForLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3 py-3">
+              <h5 class="modal-title" id="m101_consultForLabel"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f101_ConsultFor" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/1bJahWI91zSmTwTc4M7NW6kQ71BM-HWMw" alt="ConsultFor" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col">
+                      <label for="f101_advanceCarePlant" class="form-label">Advance care plant</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f101_advanceCarePlant"
+                        name="advanceCarePlant"
+                        placeholder="Advance care plant..."
+                        required
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f101_bestSuportiveCare" class="form-label">Best suportive care</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f101_bestSuportiveCare"
+                        name="bestSuportiveCare"
+                        placeholder="Best suportive care......"
+                        required
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f101_endOfLifeCareIPD_EOL" class="form-label">End of life care</label>
+                      <select class="form-select" id="f101_endOfLifeCareIPD_EOL" name="endOfLifeCareIPD_EOL">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="IPD EOL care at primary">1.IPD EOL care at primary</option>
+                        <option value="EOL care at home(home visit)">2.EOL care at home(home visit)</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="f101_skillTrainingForHomeCareAtEOL" class="form-label">Skill training for home care at EOL</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f101_skillTrainingForHomeCareAtEOL"
+                        name="skillTrainingForHomeCareAtEOL"
+                        placeholder=""
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f101_socioeconomicAndSpiritualProblem" class="form-label">Socioeconomic & spiritual problem</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f101_socioeconomicAndSpiritualProblem"
+                        name="socioeconomicAndSpiritualProblem"
+                        placeholder="Socioeconomic & spiritual problem..."
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f101_medicalEquipmentLending" class="form-label">Medical equipment lending</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f101_medicalEquipmentLending"
+                        name="medicalEquipmentLending"
+                        placeholder="Medical equipment lending..."
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f101_consultationUnit" class="form-label">หน่วยที่ส่งปรึกษา (หอผู้ป่วย, OPD)</label>
+                      <select id="f101_consultationUnit" name="consultationUnit" class="form-select" aria-label="Default select example">
+                        <option value="" selected>เลือก หอผู้ป่วย...</option>
+                        <option value="อายุรกรรมชาย">อายุรกรรมชาย</option>
+                        <option value="อายุรกรรมหญิง">อายุรกรรมหญิง</option>
+                        <option value="ศัลยกรรมชาย">ศัลยกรรมชาย</option>
+                        <option value="ศัลยกรรมหญิง">ศัลยกรรมหญิง</option>
+                        <option value="อุบัติเหตุชาย">อุบัติเหตุชาย</option>
+                        <option value="สูตินรีเวชกรรมฯ">สูตินรีเวชกรรมฯ</option>
+                        <option value="อาคาร 1 ชั้น 4">อาคาร 1 ชั้น 4</option>
+                        <option value="อาคาร 2 ชั้น 6">อาคาร 2 ชั้น 6</option>
+                        <option value="ICU ศัลฯ">ICU ศัลฯ</option>
+                        <option value="OPD">OPD</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="f101_referringPhysician" class="form-label">แพทย์ที่ส่งปรึกษา</label>
+                      <input type="text" class="form-control" id="f101_referringPhysician" name="referringPhysician" placeholder="" />
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Form ข้อมูลสภาวะสุขภาพ id: f103 -->
+      <div
+        class="modal modal-lg fade"
+        id="healthInformation_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m103_healthInformation"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3">
+              <h5 class="modal-title" id="m103_healthInformation"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f103_HealthInformation" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/1B49xnjh4CsYad7rDuQiIGm9kcw_Ame3S" alt="HealthInformation" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col">
+                      <label for="f102_diagnosis" class="form-label">Diagnosis</label>
+                      <input type="text" class="form-control" id="f102_diagnosis" name="diagnosis" placeholder="Diagnosis....." required />
+                    </div>
+                    <div class="col">
+                      <label for="f102_patientsByDisease " class="form-label">ผู้ป่วย Palliative care แยกตามโรค</label>
+                      <select id="f102_patientsByDisease" name="patientsByDisease" class="form-select" aria-label="Default select example">
+                        <option value="" selected>เลือกรายการ...</option>
+                        <option value="Cancer/Heart Disease">Cancer/Heart Disease</option>
+                        <option value="CHF/Stroke/Neurological Disease/Renal Disease">CHF/Stroke/Neurological Disease/Renal Disease</option>
+                        <option value="CKD/Liver/COPD/AIDS">CKD/Liver/COPD/AIDS</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="f102_chiefCompaint" class="form-label">Chief compaint</label>
+                      <input type="text" class="form-control" id="f102_chiefCompaint" name="chiefCompaint" placeholder="Chief compaint..." required />
+                    </div>
+                    <div class="col">
+                      <label for="f102_statusUnderlyingDisease" class="form-label">Status/Underlying disease</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f102_statusUnderlyingDisease"
+                        name="statusUnderlyingDisease"
+                        placeholder="Status/Underlying disease....."
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f102_pps" class="form-label">PPS</label>
+                      <input type="text" class="form-control" id="f102_pps" name="pps" placeholder="PPS....." />
+                    </div>
+                    <div class="col">
+                      <label for="f102_biologicalProblem" class="form-label">Biological problem</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f102_biologicalProblem"
+                        name="biologicalProblem"
+                        placeholder="Biological problem....."
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f102_psychosocial" class="form-label">Psychosocial</label>
+                      <input type="text" class="form-control" id="f102_psychosocial" name="psychosocial" placeholder="Psychosocial....." />
+                    </div>
+                    <div class="col">
+                      <label for="f102_spiritual" class="form-label">Spiritual</label>
+                      <input type="text" class="form-control" id="f102_spiritual" name="spiritual" placeholder="Spiritual....." />
+                    </div>
+                    <div class="col">
+                      <label for="f102_ppsAssessment" class="form-label">แบบประเมิน PPS</label>
+                      <input type="text" class="form-control" id="f102_ppsAssessment" name="ppsAssessment" placeholder="แบบประเมิน PPS....." />
+                    </div>
+                    <div class="col">
+                      <label for="f102_esasAssessment" class="form-label">แบบประเมินอาการรบกวน ESAS</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f102_esasAssessment"
+                        name="esasAssessment"
+                        placeholder="แบบประเมินอาการรบกวน ESAS....."
+                      />
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+
+              <!-- loading data -->
+              <div class="loading-data">
+                <div class="loader">
+                  <div class="loader_overlay"></div>
+                  <div class="loader_cogs">
+                    <div class="loader_cogs__top">
+                      <div class="top_part"></div>
+                      <div class="top_part"></div>
+                      <div class="top_part"></div>
+                      <div class="top_hole"></div>
+                    </div>
+                    <div class="loader_cogs__left">
+                      <div class="left_part"></div>
+                      <div class="left_part"></div>
+                      <div class="left_part"></div>
+                      <div class="left_hole"></div>
+                    </div>
+                    <div class="loader_cogs__bottom">
+                      <div class="bottom_part"></div>
+                      <div class="bottom_part"></div>
+                      <div class="bottom_part"></div>
+                      <div class="bottom_hole"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">อีเมล</label>
-                <input type="email" class="form-control" id="email" placeholder="example@mail.com" />
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">รหัสผ่าน</label>
-                <input type="password" class="form-control" id="password" placeholder="********" />
-              </div>
-              <button type="submit" class="btn btn-success w-100">สมัครสมาชิก</button>
-            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ฟอร์มการดูแลรักษา id: f200 -->
+    <div>
+      <!-- Modal Form Family meeting, Advance care plan id: f200 -->
+      <div
+        class="modal modal-lg fade"
+        id="familyMeeting_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m200_familyMeeting"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3">
+              <h5 class="modal-title" id="m200_familyMeeting"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f200_FamilyMeeting" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/1R-_lfnIviohWmYXWK9l3i8K0I-S0oLol" alt="FamilyMeeting" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col">
+                      <label for="f200_meetingDate" class="form-label">วันที่ Family meeting</label>
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="date-picker form-control"
+                          id="f200_meetingDate"
+                          name="meetingDate"
+                          placeholder="วันที่, เวลา"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="f200_recognitionDisease" class="form-label">การรับรู้การดำเนินการของโรค</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f200_recognitionDisease"
+                        name="recognitionDisease"
+                        placeholder="การรับรู้การดำเนินการของโรค......"
+                        required
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f200_livingWillDocumentation" class="form-label">Living will documentation</label>
+                      <select class="form-select" id="f200_livingWillDocumentation" name="livingWillDocumentation">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="1">Yes</option>
+                        <option value="2">No</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="f200_resuscitaionPlanNoETT" class="form-label">Resuscitaion plan</label>
+                      <select class="form-select" id="f200_resuscitaionPlanNoETT" name="resuscitaionPlanNoETT">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="no ETT">no ETT</option>
+                        <option value="no CPR">no CPR</option>
+                        <option value="no Inotrope">no Inotrope</option>
+                        <option value="no Central line">no Central line</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="f200_placeOfDeath" class="form-label">Place of death</label>
+                      <select class="form-select" id="f200_placeOfDeath" name="placeOfDeath">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="Home">Home</option>
+                        <option value="Primary ward">Primary ward</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Form treatment id: f201 -->
+      <div
+        class="modal modal-lg fade"
+        id="treatment_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m201_treatmentLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3">
+              <h5 class="modal-title" id="m201_treatmentLabel"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f201_Treatment" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/17d-ZvzrG2wzbriB2e7yx7TKt3NXzEw4n" alt="Treatment" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col-lg-12">
+                      <label for="f201_pcNote" class="form-label">PC note</label>
+                      <textarea type="text" class="form-control" id="f201_pcNote" name="pcNote" rows="4" placeholder="PC note..."></textarea>
+                    </div>
+                    <div class="col">
+                      <label for="f201_medicationsUsed" class="form-label">ยาที่ใช้</label>
+                      <input type="text" class="form-control" id="f201_medicationsUsed" name="medicationsUsed" placeholder="ยาที่ใช้......" />
+                    </div>
+                    <div class="col">
+                      <label for="f201_issuesSolvedUrgently" class="form-label">ปัญหาที่ต้องการแก้ไขเร่งด่วน</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f201_issuesSolvedUrgently"
+                        name="issuesSolvedUrgently"
+                        placeholder="ปัญหาที่ต้องการแก้ไขเร่งด่วน..."
+                        required
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f201_carePlanCareRoutine" class="form-label">แผนการดูแล/กิจกรรการดูแล</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f201_carePlanCareRoutine"
+                        name="carePlanCareRoutine"
+                        placeholder="แผนการดูแล/กิจกรรการดูแล..."
+                      />
+                    </div>
+                    <div class="col">
+                      <label for="f201_resultsSuggestions" class="form-label">ผลลัพธ์/ข้อเสนอแนะ</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="f201_resultsSuggestions"
+                        name="resultsSuggestions"
+                        placeholder="ผลลัพธ์/ข้อเสนอแนะ..."
+                      />
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Form Education&training programe id: f202 -->
+      <div
+        class="modal modal-lg fade"
+        id="educationTraining_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m202_educationTraining_modal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3">
+              <h5 class="modal-title" id="m202_educationTraining_modal"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f202_EducationTraining" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/1JL0sk1J0s5sUpp3VYDfYNAMrTT9yCtq5" alt="EducationTraining" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col-lg-12">
+                      <label for="f202_trainning" class="form-label">Trainning</label>
+                      <select id="f202_trainning" name="trainning" class="form-select" aria-label="Default select example">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="ผู้ป่วย">ผู้ป่วย</option>
+                        <option value="ญาติ">ญาติ</option>
+                        <option value="ผู้ดูแล">ผู้ดูแล</option>
+                        <option value="no training">no training</option>
+                      </select>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_endOfLifeCare" name="endOfLifeCare" />
+                        <label class="form-check-label" for="f202_endOfLifeCare"> End of life care </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_symptomsNearDeath" name="symptomsNearDeath" />
+                        <label class="form-check-label" for="f202_symptomsNearDeath"> อาการที่พบได้เมื่อใกล้เสียชีวิต </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_relaxation" name="relaxation" />
+                        <label class="form-check-label" for="f202_relaxation"> การผ่อนคลายร่างกายและจิตใจ </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_sideFlip" name="sideFlip" />
+                        <label class="form-check-label" for="f202_sideFlip"> การพลิกตะแคงตัวจัดท่า </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_respiratoryCare" name="respiratoryCare" />
+                        <label class="form-check-label" for="f202_respiratoryCare"> การดูแลทางเดินหายใจ </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_onNgTube" name="onNgTube" />
+                        <label class="form-check-label" for="f202_onNgTube"> การดูแลผู้ป่วย on NG-tube </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_retrainedFoleyCath" name="retrainedFoleyCath" />
+                        <label class="form-check-label" for="f202_retrainedFoleyCath"> การดูแลผู้ป่วย Retrained foley's cath </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_wondCare" name="wondCare" />
+                        <label class="form-check-label" for="f202_wondCare"> Wond care </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="TRUE" id="f202_colostomyCare" name="colostomyCare" />
+                        <label class="form-check-label" for="f202_colostomyCare"> Colostomy care </label>
+                      </div>
+                      <div class="mt-3">
+                        <label class="form-label" for="f202_other">อื่นๆ</label>
+                        <textarea class="form-control" id="f202_other" name="other" rows="4"></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ฟอร์มการดูแลต่อเนื่อง id: f300 -->
+    <div>
+      <!-- Modal Form การให้คำปรึกษา โทรติดตาม/Line id: f300 -->
+      <div
+        class="modal modal-lg fade"
+        id="followUp_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m300_followUpLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3">
+              <h5 class="modal-title" id="m300_followUpLabel"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f300_FollowUp" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/1WG05teMtGeslui4cdnhuBFHdy5FchTVH" alt="FollowUp" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col">
+                      <label for="f300_followUpDate" class="form-label">วันที่ติดตาม ให้คำปรึกษา/เวลา</label>
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="date-picker form-control"
+                          id="f300_followUpDate"
+                          name="followUpDate"
+                          placeholder="วันที่, เวลา"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="f300_pps50_100" class="form-label">PPS 50-100% ประเมินทุกสัปดาห์</label>
+                      <input type="text" class="form-control" id="f300_pps50_100" name="pps50_100" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f300_pps30_40" class="form-label">PPS 30-40% ประเมินทุก 3 เดือน</label>
+                      <input type="text" class="form-control" id="f300_pps30_40" name="pps30_40" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f300_pps10_20" class="form-label">PPS 10-20% ประเมินทุกวัน</label>
+                      <input type="text" class="form-control" id="f300_pps10_20" name="pps10_20" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f300_ppsPercent" class="form-label">PPS %</label>
+                      <input type="text" class="form-control" id="f300_ppsPercent" name="ppsPercent" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f300_issue" class="form-label">ปัญหา</label>
+                      <input type="text" class="form-control" id="f300_issue" name="issue" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f300_resolve" class="form-label">การแก้ไข</label>
+                      <input type="text" class="form-control" id="f300_resolve" name="resolve" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f300_caring" class="form-label">กิจกรรการดูแล</label>
+                      <select class="form-select" id="f300_caring" name="caring">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="no ETT">การติดตามอาการ</option>
+                        <option value="no CPR">การใช้ยา</option>
+                        <option value="no Inotrope">การให้คำแนะนำในการสังเกตุอาการผิดปกติ และการดูแลผู้ป่วย</option>
+                        <option value="no Central line">การประเมินผู้ป่วยเมื่อมีการปรับรักษา</option>
+                        <option value="Other">การติดตามการนัดหมาย</option>
+                        <option value="Other">การดูแลด้านอื่นๆ</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Form เยี่ยมบ้าน id: f301 -->
+      <div
+        class="modal modal-lg fade"
+        id="homeVisit_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="m301_homeVisitLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header py-3">
+              <h5 class="modal-title" id="m301_homeVisitLabel"><i class="fa-regular fa-pen-to-square"></i> แก้ไขข้อมูล</h5>
+              <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body pb-0">
+              <form id="f301_HomeVisit" onsubmit="">
+                <div class="d-flex justify-content-center page-child-icon p-5">
+                  <img src="https://lh5.googleusercontent.com/d/1-PI4l76uMEAGuRWjMnISGT2K37FI8IBT" alt="HomeVisit" />
+                </div>
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-lg-2 gx-5 gy-3 mb-5 mx-lg-2">
+                    <div class="col">
+                      <label for="f301_homeVisitDate" class="form-label">วันที่เยี่ยมบ้าน/เวลา</label>
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          class="date-picker form-control"
+                          id="f301_homeVisitDate"
+                          name="homeVisitDate"
+                          placeholder="วันที่, เวลา"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="f301_homeVisitNo" class="form-label">เยี่ยมบ้านครั้งที่</label>
+                      <input type="tel" class="form-control" id="f301_homeVisitNo" name="homeVisitNo" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f301_ppsPercent" class="form-label">PPS %</label>
+                      <input type="text" class="form-control" id="f301_ppsPercent" name="ppsPercent" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f301_issue" class="form-label">ปัญหา</label>
+                      <input type="text" class="form-control" id="f301_issue" name="issue" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f301_resolve" class="form-label">การแก้ไข</label>
+                      <input type="text" class="form-control" id="f301_resolve" name="resolve" placeholder="" />
+                    </div>
+                    <div class="col">
+                      <label for="f301_caring" class="form-label">กิจกรรการดูแล</label>
+                      <select class="form-select" id="f301_caring" name="caring">
+                        <option value="" selected>เลือกจากรายการ</option>
+                        <option value="no ETT">การติดตามอาการ/การจัดการอาหาร</option>
+                        <option value="no CPR">การใช้ยา</option>
+                        <option value="no Inotrope">การให้คำแนะนำในการสังเกตุอาการผิดปกติ และการดูแลผู้ป่วย</option>
+                        <option value="no Central line">การประเมินผู้ป่วยเมื่อมีการปรับรักษา</option>
+                        <option value="Other">การทำแผล</option>
+                        <option value="Other">การให้คำแนะนำ</option>
+                        <option value="Other">การดูแลด้านอื่นๆ</option>
+                        <option value="Other">การประคับประคองจิตใจ</option>
+                        <option value="Other">ปรึกษาทีมทีเกี่ยวข้อง</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer py-3 gap-2">
+                    <button type="submit" class="btn-form btn-form-submit">บันทึก</button>
+                    <button type="reset" class="btn-form btn-form-cancel" data-bs-dismiss="modal">ยกเลิก</button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -1012,7 +2039,7 @@
 
     <!-- หน้าหลัก, หน้าย่อย -->
     <script>
-      const btnPageChild = $('.btn-menu-child-page,  .list-menu-page');
+      const btnPageChild = $('.list-menu-page, .nav-menu-page, .btn-menu-child-page');
       var currentMainPage = 'homepage';
       var currentChildPage = null;
 
@@ -1024,23 +2051,50 @@
         btnPageChild.click(function () {
           const mainPageId = $(this).data('main-page-id');
           const childPageId = $(this).data('child-page-id');
+          changePage(mainPageId, childPageId);
+        });
 
-          if (mainPageId && mainPageId != currentMainPage) {
-            currentMainPage = mainPageId;
+        // Show password
+        const toggle_password = document.querySelectorAll('.toggle-password');
+        toggle_password.forEach((el) => {
+          el.addEventListener('click', () => {
+            const input = el.previousElementSibling;
+            const type = input.type;
+            if (type === 'password') {
+              input.type = 'text';
+              el.innerHTML = '<i class="fa fa-eye-slash"></i>';
+            } else {
+              input.type = 'password';
+              el.innerHTML = '<i class="fa fa-eye"></i>';
+            }
+          });
+        });
+      });
 
-            $('.main-page').hide();
-            $(`#${currentMainPage}`).fadeIn(300, function () {
-              currentChildPage = childPageId;
-              $('.child-page').hide();
-              $(`#${currentChildPage}`).fadeIn(500);
-            });
-          } else if (childPageId != currentChildPage) {
+      function changePage(mainPageId, childPageId) {
+        if (mainPageId != currentMainPage && (mainPageId === 'homepage' || mainPageId === 'edit_profile')) {
+          currentMainPage = mainPageId;
+          $('.main-page').hide();
+          $(`#${currentMainPage}`).fadeIn('fast');
+          $('.section-user-data').slideUp();
+        } else if (mainPageId && mainPageId != currentMainPage) {
+          currentMainPage = mainPageId;
+
+          $('.main-page').hide();
+          $(`#${currentMainPage}`).fadeIn(300, function () {
             currentChildPage = childPageId;
             $('.child-page').hide();
             $(`#${currentChildPage}`).fadeIn(500);
-          }
-        });
-      });
+          });
+        } else if (childPageId != currentChildPage) {
+          currentChildPage = childPageId;
+          $('.child-page').hide();
+          $(`#${currentChildPage}`).fadeIn(500);
+        }
+
+        const pageName = $(`#${currentMainPage}`).data('page-name');
+        $('#page_title').text(pageName);
+      }
     </script>
 
     <!-- แถบนำทาง -->
@@ -1154,27 +2208,10 @@
           // ดึงข้อมูลแถวที่เลือก
           const data = table.getRowData(this);
           console.log(data);
-          patientHistory();
-        });
-
-        function patientHistory() {
-          currentMainPage = 'patientInformation';
-          currentChildPage = 'patientInformation_1';
-          $('.main-page').hide();
+          const mainPageId = 'patientInformation';
+          const childPageId = 'patientInformation_1';
           $('.section-user-data').slideDown();
-
-          $(`#${currentMainPage}`).fadeIn(300, function () {
-            $('.child-page').hide();
-            $(`#${currentChildPage}`).fadeIn(500);
-          });
-        }
-
-        $('.list-menu-page[data-main-page-id="homepage"]').click(function () {
-          currentMainPage = 'homepage';
-          currentChildPage = '';
-          $('.main-page').hide();
-          $(`#${currentMainPage}`).fadeIn('fast');
-          $('.section-user-data').slideUp();
+          changePage(mainPageId, childPageId);
         });
       });
 
@@ -1290,6 +2327,7 @@
       }
     </script>
 
+    <!-- กรองข้อมูล -->
     <script>
       $(document).ready(function () {
         //  กรองข้อมูลเฉพาะคลอลั่ม
@@ -1316,8 +2354,14 @@
         // รีเซ็ตการกรองข้อมูล
         $('#reset_filter').on('click', (event) => {
           $('input.table_filter').val('');
-          $('input.column_filter, select.column_filter, input.mc-date-picker').val('');
+          $('input.column_filter').val('');
           $('select.column_filter_same').val('');
+          $('select.column_filter').val('');
+          $('input#service_start_date').val('');
+          $('input#service_start_time').val('');
+          $('input#until_the_date_of_service').val('');
+          $('input#until_the_time_of_service').val('');
+
 
           table.getTable().search('');
           table.getTable().columns('').search('').draw();
@@ -1361,7 +2405,7 @@
         ];
         const dayNames = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
         const datepicker_settings = {
-          bodyType: 'modal',
+          bodyType: 'inline',
           selectedDate: new Date(),
           dateFormat: 'dd/mm/yyyy',
           customMonths: monthNames,
@@ -1373,7 +2417,9 @@
         };
 
         const filter_sDate_el = '#service_start_date';
+        const filter_sTime_el = '#service_start_time';
         const filter_eDate_el = '#until_the_date_of_service';
+        const filter_eTime_el = '#until_the_time_of_service';
 
         const sDatePicker = MCDatepicker.create({
           el: filter_sDate_el,
@@ -1401,35 +2447,41 @@
           table.getTable().draw();
         });
 
-        // Custom filtering function which will search data in column four between two values
-        DataTable.ext.search.push(function (settings, data, dataIndex) {
-          const sDate = dateFormat($(filter_sDate_el).val());
-          const eDate = dateFormat($(filter_eDate_el).val());
-          const col_filter = 1;
-
-          const date = dateFormat(data[col_filter]);
-          if (!sDate || !eDate) return true;
-
-          if (date >= sDate && date <= eDate) return true;
-
-          return false;
+        $(`${filter_sTime_el}, ${filter_eTime_el}`).on('input', () => {
+          table.getTable().draw();
         });
 
-        // convert dd/mm/yyyy to yyyy/mm/dd
-        function dateFormat(date) {
-          if (!date) return;
-          const _date = date.split(', ')[0];
-          const dd = _date.split('/')[0];
-          const mm = _date.split('/')[1];
-          const yyyy = _date.split('/')[2];
-          const iso_date = new Date([yyyy, mm, dd].join('-'));
-          return iso_date;
+        // Custom filtering function which will search data in column four between two values
+        DataTable.ext.search.push(function (settings, data, dataIndex) {
+          const sDate = $(filter_sDate_el).val();
+          const sTime = $(filter_sTime_el).val();
+          const eDate = $(filter_eDate_el).val();
+          const eTime = $(filter_eTime_el).val();
+
+          if (!sDate || !eDate) return true;
+
+          const sDateTime = dateTimeFormat([sDate, sTime ? sTime : '00:00'].join(', '));
+          const eDateTime = dateTimeFormat([eDate, eTime ? eTime : '23:59'].join(', '));
+          const col_filter = 1;
+
+          const dataDateTime = dateTimeFormat(data[col_filter]);
+
+          return dataDateTime >= sDateTime && dataDateTime <= eDateTime;
+        });
+
+        // Convert dd/mm/yyyy HH:MM to a comparable Date object
+        function dateTimeFormat(dateTime) {
+          if (!dateTime) return null;
+
+          const _date = dateTime.split(', ')[0];
+          const _time = dateTime.split(', ')[1];
+          const [dd, mm, yyyy] = _date.split('/');
+          const [hh, min] = _time.split(':');
+
+          return new Date(yyyy, mm - 1, dd, hh, min); // JS month starts from 0
         }
       });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>

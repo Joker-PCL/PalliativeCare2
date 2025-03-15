@@ -43,9 +43,6 @@
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 33, 37, 41;
   --bs-body-bg-rgb: 255, 255, 255;
-  --bs-font-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
   --bs-body-font-size: 1rem;
@@ -68,6 +65,73 @@
   --bs-link-hover-color: #0a58ca;
   --bs-code-color: #d63384;
   --bs-highlight-bg: #fff3cd;
+}
+
+.button-36 {
+  border-radius: 999px;
+  box-shadow: #5e5df0 0 10px 20px -10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 1;
+  outline: 0 solid transparent;
+  padding: 8px 18px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  border: 0;
+  background-image: linear-gradient(92.88deg, #455eb5 9.16%, #5643cc 43.89%, #673fd7 64.72%);
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: center;
+  text-shadow: rgba(0, 0, 0, 0.25) 0 3px 8px;
+  transition: all 0.5s;
+}
+
+.button-36:hover {
+  box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
+  transition-duration: 0.1s;
+}
+
+.btn-form {
+  background-color: initial;
+  border-radius: 15px;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+  color: #ffffff;
+  cursor: pointer;
+  width: 125px;
+  height: 45px;
+  outline: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  border: 0;
+  transition: transform 0.2s ease-in-out;
+
+  &.btn-form-submit {
+    background-image: linear-gradient(-180deg, #13aa52, #119247);
+
+    &:hover {
+      transform: translateY(-2px);
+      background: #119247;
+    }
+  }
+
+  &.btn-form-cancel {
+    background-image: linear-gradient(-180deg, #e62143, #b32139);
+
+    &:hover {
+      transform: translateY(-2px);
+      background: #b32139;
+    }
+  }
+}
+
+#service_start_time,
+#until_the_time_of_service {
+  max-width: 125px !important;
 }
 
 .text-indigo:hover,
